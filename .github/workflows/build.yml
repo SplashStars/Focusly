@@ -1,0 +1,73 @@
+name: Build Focusly APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter 3.22.3
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.3'
+          channel: 'stable'
+
+      - name: Verify Flutter version
+        run: flutter --version
+
+      - name: Create base Flutter project
+        run: flutter create --org com.example --project-name focusly /tmp/focusly_build
+
+      - name: Copy Focusly source files
+        run: |
+          echo "Copying Dart source..."
+          cp -r focusly/lib/* /tmp/focusly_build/lib/
+          cp focusly/pubspec.yaml /tmp/focusly_build/pubspec.yaml
+          cp focusly/analysis_options.yaml /tmp/focusly_build/analysis_options.yaml
+
+          echo "Copying Android files..."
+          cp focusly/android/app/build.gradle \
+             /tmp/focusly_build/android/app/build.gradle
+          cp focusly/android/settings.gradle \
+             /tmp/focusly_build/android/settings.gradle
+          cp focusly/android/gradle.properties \
+             /tmp/focusly_build/android/gradle.properties
+          cp focusly/android/gradle/wrapper/gradle-wrapper.properties \
+             /tmp/focusly_build/android/gradle/wrapper/gradle-wrapper.properties
+          cp focusly/android/app/src/main/AndroidManifest.xml \
+             /tmp/focusly_build/android/app/src/main/AndroidManifest.xml
+          cp -r focusly/android/app/src/main/res/* \
+             /tmp/focusly_build/android/app/src/main/res/
+          cp focusly/android/app/src/main/kotlin/com/example/focusly/MainActivity.kt \
+             /tmp/focusly_build/android/app/src/main/kotlin/com/example/focusly/MainActivity.kt
+          echo "All files copied."
+
+      - name: Accept Android licenses
+        run: yes | flutter doctor --android-licenses || true
+
+      - name: Install packages
+        working-directory: /tmp/focusly_build
+        run: flutter pub get
+
+      - name: Build debug APK
+        working-directory: /tmp/focusly_build
+        run: flutter build apk --debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: focusly-debug-apk
+          path: /tmp/focusly_build/build/app/outputs/flutter-apk/app-debug.apk
