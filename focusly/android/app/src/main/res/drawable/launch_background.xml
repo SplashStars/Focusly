@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Splash screen background — deep purple matching the Focusly app theme.
+     This is what users see for the brief moment while Flutter loads. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Deep purple background (#0D0820) -->
+    <item>
+        <color android:color="#0D0820"/>
+    </item>
+    <!-- Optional: add a centered logo image here later
+    <item android:gravity="center">
+        <bitmap android:src="@drawable/focusly_logo"/>
+    </item>
+    -->
+</layer-list>

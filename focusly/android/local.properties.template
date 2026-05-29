@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# IMPORTANT: Rename this file to "local.properties" (remove .template)
+# Then fill in YOUR Flutter SDK path below.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Your Flutter SDK location — change this to match where YOU installed Flutter:
+#
+# Windows example:
+#   sdk.dir=C:\\Users\\YourName\\AppData\\Local\\Android\\Sdk
+#   flutter.sdk=C:\\flutter
+#
+# Mac example:
+#   sdk.dir=/Users/YourName/Library/Android/sdk
+#   flutter.sdk=/Users/YourName/flutter
+#
+# Linux example:
+#   sdk.dir=/home/YourName/Android/Sdk
+#   flutter.sdk=/home/YourName/flutter
+
+sdk.dir=REPLACE_WITH_YOUR_ANDROID_SDK_PATH
+flutter.sdk=REPLACE_WITH_YOUR_FLUTTER_SDK_PATH
+
+# These are set automatically by Flutter — do not edit:
+flutter.versionCode=1
+flutter.versionName=1.0.0
+flutter.buildMode=debug

@@ -1,0 +1,44 @@
+name: focusly
+description: Focusly - Your Daily Planner. Tasks, habits & projects in one beautiful app.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.2
+
+  # Local database (no internet required)
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
+
+  # Push notifications & reminders (FREE for all users)
+  flutter_local_notifications: ^17.2.3
+  timezone: ^0.9.4
+
+  # Utilities
+  intl: ^0.19.0
+  uuid: ^4.5.0
+  shared_preferences: ^2.3.2
+
+  # Beautiful UI
+  google_fonts: ^6.2.1
+  percent_indicator: ^4.2.3
+  flutter_slidable: ^3.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  # Add your app icon here later:
+  # flutter:
+  #   assets:
+  #     - assets/images/

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launch theme — shown while Flutter loads. Uses a deep purple background
+     that matches the Focusly app theme for a seamless launch experience. -->
+<resources>
+    <!-- Theme applied while Flutter initializes (splash screen) -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- Theme for the actual Flutter content — transparent so Flutter draws everything -->
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

@@ -1,0 +1,76 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+// Read version info from local.properties (set by Flutter)
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader -> localProperties.load(reader) }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
+def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0.0"
+
+android {
+    // Your app's unique ID — change "com.example" to your own domain before publishing!
+    namespace "com.example.focusly"
+
+    compileSdk flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        // Required for some Flutter packages
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+        applicationId "com.example.focusly"
+
+        // Minimum Android 5.0 (covers 99%+ of active Android devices)
+        minSdk 21
+
+        // Use latest stable Android SDK
+        targetSdk flutter.targetSdkVersion
+
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+
+        // Required for flutter_local_notifications
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        debug {
+            // Debug builds use auto-generated debug key (fine for testing)
+            signingConfig signingConfigs.debug
+        }
+        release {
+            // TODO: Before publishing to Play Store, replace this with your
+            // own signing key (see SETUP_GUIDE.md Part 4 Step 2)
+            signingConfig signingConfigs.debug
+
+            // Shrinking disabled for now — enable once app is stable
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+}
+
+flutter {
+    source "../.."
+}
+
+dependencies {
+    // Required for coreLibraryDesugaringEnabled
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23"
+}
