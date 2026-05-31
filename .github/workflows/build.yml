@@ -35,10 +35,10 @@ jobs:
       - name: Generate default launcher icons
         run: |
           flutter create --org com.example --project-name focusly /tmp/icon_source
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-hdpi    focusly/android/app/src/main/res/
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-mdpi    focusly/android/app/src/main/res/
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xhdpi   focusly/android/app/src/main/res/
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxhdpi  focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-hdpi focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-mdpi focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xhdpi focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxhdpi focusly/android/app/src/main/res/
           cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxxhdpi focusly/android/app/src/main/res/
           echo "Launcher icons ready."
 
@@ -46,25 +46,27 @@ jobs:
         working-directory: focusly
         run: flutter pub get
 
-      - name: Build debug APK
+      - name: Build release APKs (split by CPU architecture)
         working-directory: focusly
-        run: flutter build apk --debug --verbose
+        run: flutter build apk --release --split-per-abi --verbose
 
-      - name: Verify APK exists
+      - name: Verify APKs exist
         run: |
-          APK="focusly/build/app/outputs/flutter-apk/app-debug.apk"
-          if [ -f "$APK" ]; then
-            echo "Build succeeded!"
-            ls -lh "$APK"
-          else
-            echo "APK missing"
-            find focusly/build -name "*.apk" 2>/dev/null || echo "None found."
-            exit 1
-          fi
+          echo "=== Built APKs ==="
+          ls -lh focusly/build/app/outputs/flutter-apk/app-*-release.apk || echo "No release APKs found"
+          echo "=== arm64 APK (recommended for modern phones) ==="
+          ls -lh focusly/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 
-      - name: Upload APK artifact
+      - name: Upload arm64 APK (modern phones — recommended)
         uses: actions/upload-artifact@v4
         with:
-          name: focusly-debug-apk
-          path: focusly/build/app/outputs/flutter-apk/app-debug.apk
+          name: focusly-arm64-release
+          path: focusly/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          retention-days: 30
+
+      - name: Upload armeabi APK (older phones)
+        uses: actions/upload-artifact@v4
+        with:
+          name: focusly-armeabi-release
+          path: focusly/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
           retention-days: 30
