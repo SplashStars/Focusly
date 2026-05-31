@@ -1,26 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ─────────────────────────────────────────────────────────────────────────
-     Focusly Android Manifest — permissions for notifications & scheduling
-     ──────────────────────────────────────────────────────────────────────── -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Internet (not needed for local storage, but required by some Flutter internals) -->
-    <!-- <uses-permission android:name="android.permission.INTERNET"/> -->
-
-    <!-- Notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
-    <!-- Exact alarms — required for timed reminders (Android 12+) -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
-
-    <!-- Wake device for important reminders -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-
-    <!-- Restart notification schedule after phone reboot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
-    <!-- Vibration for notifications -->
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
@@ -29,7 +14,8 @@
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
-        android:dataExtractionRules="@xml/data_extraction_rules">
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:requestLegacyExternalStorage="false">
 
         <activity
             android:name=".MainActivity"
@@ -50,7 +36,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Required: receive boot event to re-schedule notifications -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
             android:exported="false">
@@ -62,7 +47,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- Required: broadcast receiver for exact alarms -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
             android:exported="false"/>
@@ -72,6 +56,4 @@
             android:value="2"/>
     </application>
 
-    <!-- Required to query installed apps on Android 11+ (if needed later) -->
-    <!-- <queries></queries> -->
 </manifest>
