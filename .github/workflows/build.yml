@@ -24,50 +24,47 @@ jobs:
         with:
           flutter-version: '3.22.3'
           channel: 'stable'
+          cache: true
 
       - name: Verify Flutter version
         run: flutter --version
 
-      - name: Create base Flutter project
-        run: flutter create --org com.example --project-name focusly /tmp/focusly_build
-
-      - name: Copy Focusly source files
-        run: |
-          echo "Copying Dart source..."
-          cp -r focusly/lib/* /tmp/focusly_build/lib/
-          cp focusly/pubspec.yaml /tmp/focusly_build/pubspec.yaml
-          cp focusly/analysis_options.yaml /tmp/focusly_build/analysis_options.yaml
-
-          echo "Copying Android files..."
-          cp focusly/android/app/build.gradle \
-             /tmp/focusly_build/android/app/build.gradle
-          cp focusly/android/settings.gradle \
-             /tmp/focusly_build/android/settings.gradle
-          cp focusly/android/gradle.properties \
-             /tmp/focusly_build/android/gradle.properties
-          cp focusly/android/gradle/wrapper/gradle-wrapper.properties \
-             /tmp/focusly_build/android/gradle/wrapper/gradle-wrapper.properties
-          cp focusly/android/app/src/main/AndroidManifest.xml \
-             /tmp/focusly_build/android/app/src/main/AndroidManifest.xml
-          cp -r focusly/android/app/src/main/res/* \
-             /tmp/focusly_build/android/app/src/main/res/
-          cp focusly/android/app/src/main/kotlin/com/example/focusly/MainActivity.kt \
-             /tmp/focusly_build/android/app/src/main/kotlin/com/example/focusly/MainActivity.kt
-          echo "All files copied."
-
-      - name: Accept Android licenses
+      - name: Accept Android SDK licenses
         run: yes | flutter doctor --android-licenses || true
 
-      - name: Install packages
-        working-directory: /tmp/focusly_build
+      - name: Generate default launcher icons
+        run: |
+          flutter create --org com.example --project-name focusly /tmp/icon_source
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-hdpi    focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-mdpi    focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xhdpi   focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxhdpi  focusly/android/app/src/main/res/
+          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxxhdpi focusly/android/app/src/main/res/
+          echo "Launcher icons ready."
+
+      - name: Install Flutter packages
+        working-directory: focusly
         run: flutter pub get
 
       - name: Build debug APK
-        working-directory: /tmp/focusly_build
-        run: flutter build apk --debug
+        working-directory: focusly
+        run: flutter build apk --debug --verbose
+
+      - name: Verify APK exists
+        run: |
+          APK="focusly/build/app/outputs/flutter-apk/app-debug.apk"
+          if [ -f "$APK" ]; then
+            echo "Build succeeded!"
+            ls -lh "$APK"
+          else
+            echo "APK missing"
+            find focusly/build -name "*.apk" 2>/dev/null || echo "None found."
+            exit 1
+          fi
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: focusly-debug-apk
-          path: /tmp/focusly_build/build/app/outputs/flutter-apk/app-debug.apk
+          path: focusly/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 30
