@@ -1,0 +1,20 @@
+// Top-level build file — plugin management is handled in settings.gradle.
+// This file must exist for Flutter's tooling to recognise the Android sub-project.
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = "../build"
+
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
