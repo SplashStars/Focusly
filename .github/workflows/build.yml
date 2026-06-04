@@ -46,27 +46,48 @@ jobs:
         working-directory: focusly
         run: flutter pub get
 
+      - name: Decode release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > /tmp/focusly-release.keystore
+          echo "Keystore decoded: $(ls -lh /tmp/focusly-release.keystore)"
+
       - name: Build release APKs (split by CPU architecture)
         working-directory: focusly
+        env:
+          KEYSTORE_FILE: /tmp/focusly-release.keystore
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: flutter build apk --release --split-per-abi --verbose
 
-      - name: Verify APKs exist
-        run: |
-          echo "=== Built APKs ==="
-          ls -lh focusly/build/app/outputs/flutter-apk/app-*-release.apk || echo "No release APKs found"
-          echo "=== arm64 APK (recommended for modern phones) ==="
-          ls -lh focusly/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+      - name: Build release AAB (for Google Play Store)
+        working-directory: focusly
+        env:
+          KEYSTORE_FILE: /tmp/focusly-release.keystore
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: flutter build appbundle --release --verbose
 
-      - name: Upload arm64 APK (modern phones — recommended)
+      - name: Verify outputs exist
+        run: |
+          echo "=== Release APKs ==="
+          ls -lh focusly/build/app/outputs/flutter-apk/app-*-release.apk
+          echo "=== Release AAB ==="
+          ls -lh focusly/build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload arm64 APK (install on phone)
         uses: actions/upload-artifact@v4
         with:
           name: focusly-arm64-release
           path: focusly/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
           retention-days: 30
 
-      - name: Upload armeabi APK (older phones)
+      - name: Upload AAB (upload to Play Store)
         uses: actions/upload-artifact@v4
         with:
-          name: focusly-armeabi-release
-          path: focusly/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          name: focusly-play-store-aab
+          path: focusly/build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
