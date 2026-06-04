@@ -38,12 +38,25 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            def keystorePath = System.getenv("KEYSTORE_FILE")
+            if (keystorePath) {
+                storeFile file(keystorePath)
+                storePassword System.getenv("STORE_PASSWORD") ?: ""
+                keyAlias System.getenv("KEY_ALIAS") ?: ""
+                keyPassword System.getenv("KEY_PASSWORD") ?: ""
+            }
+        }
+    }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.debug
+            def hasKeystore = System.getenv("KEYSTORE_FILE") != null
+            signingConfig hasKeystore ? signingConfigs.release : signingConfigs.debug
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
