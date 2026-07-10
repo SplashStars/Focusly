@@ -1,3 +1,16 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Focusly — GitHub Actions build workflow
+# v1.1.0
+#
+# Triggers:
+#   • Push to main → builds debug APK automatically
+#   • Manual trigger → choose debug or release APK
+#
+# Artifacts produced:
+#   • focusly-debug-apk   (always) — install directly on phone for testing
+#   • focusly-release-apk (manual, release mode) — closest to Play Store build
+# ─────────────────────────────────────────────────────────────────────────────
+
 name: Build Focusly APK
 
 on:
@@ -19,15 +32,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ── 1. Get the code ──────────────────────────────────────────────────────
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ── 2. Java ──────────────────────────────────────────────────────────────
       - name: Setup Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      # ── 2b. Cache Gradle dependencies (avoids Maven Central flakiness) ────────
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -38,12 +54,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Add Maven Central mirror (fixes 403 from repo.maven.apache.org on GH runners)
-        run: |
-          mkdir -p ~/.gradle/init.d
-          printf 'allprojects {\n  buildscript { repositories { maven { url \'https://repo1.maven.org/maven2/\' } } }\n  repositories { maven { url \'https://repo1.maven.org/maven2/\' } }\n}\n' > ~/.gradle/init.d/maven-mirror.gradle
-          cat ~/.gradle/init.d/maven-mirror.gradle
-
+      # ── 3. Flutter ───────────────────────────────────────────────────────────
       - name: Setup Flutter 3.22.3
         uses: subosito/flutter-action@v2
         with:
@@ -54,9 +65,11 @@ jobs:
       - name: Verify Flutter version
         run: flutter --version
 
+      # ── 4. Android licenses ──────────────────────────────────────────────────
       - name: Accept Android SDK licenses
         run: yes | flutter doctor --android-licenses || true
 
+      # ── 5. Launcher icons ────────────────────────────────────────────────────
       - name: Generate launcher icons
         run: |
           flutter create --org com.example --project-name focusly /tmp/icon_source
@@ -67,10 +80,19 @@ jobs:
           cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxxhdpi focusly/android/app/src/main/res/
           echo "Launcher icons ready."
 
+      # ── 6. Flutter packages ──────────────────────────────────────────────────
       - name: Install Flutter packages
         working-directory: focusly
         run: flutter pub get
 
+      # ── 6b. Maven mirror fix (repo.maven.apache.org returns 403 on GH runners)
+      - name: Add Maven Central mirror init script
+        run: |
+          mkdir -p ~/.gradle/init.d
+          echo "YWxscHJvamVjdHMgewogIGJ1aWxkc2NyaXB0IHsgcmVwb3NpdG9yaWVzIHsgbWF2ZW4geyB1cmwgJ2h0dHBzOi8vcmVwbzEubWF2ZW4ub3JnL21hdmVuMi8nIH0gfSB9CiAgcmVwb3NpdG9yaWVzIHsgbWF2ZW4geyB1cmwgJ2h0dHBzOi8vcmVwbzEubWF2ZW4ub3JnL21hdmVuMi8nIH0gfQp9Cg==" | base64 -d > ~/.gradle/init.d/maven-mirror.gradle
+          cat ~/.gradle/init.d/maven-mirror.gradle
+
+      # ── 7a. Build debug APK ──────────────────────────────────────────────────
       - name: Build debug APK
         if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'debug' }}
         working-directory: focusly
@@ -84,6 +106,7 @@ jobs:
           path: focusly/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 30
 
+      # ── 7b. Build release APK (manual trigger only) ──────────────────────────
       - name: Build release APK
         if: ${{ github.event.inputs.build_type == 'release' }}
         working-directory: focusly
@@ -97,6 +120,10 @@ jobs:
           path: focusly/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
+      # ── 8. Print result ──────────────────────────────────────────────────
       - name: Build summary
         run: |
-          echo "Build complete! Download APK from the Actions tab."
+          echo "======================================="
+          echo "  Focusly v$(grep '^version:' focusly/pubspec.yaml | cut -d' ' -f2) build complete!"
+          echo "  Download the APK from the Actions tab"
+          echo "======================================="
