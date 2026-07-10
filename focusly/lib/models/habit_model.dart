@@ -1,7 +1,7 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Habit Model — daily habits with streaks
-// v1.1.0: Added targetDays — user can pick specific days of the week
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Habit Model â daily habits with streaks
+// v1.1.0: Added targetDays â user can pick specific days of the week
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
@@ -13,7 +13,7 @@ class HabitModel {
   int colorValue;         // Stored as int (ARGB)
   String iconName;        // Material icon name string
   String frequency;       // 'daily' or 'custom'
-  List<int> targetDays;   // 1=Mon, 2=Tue … 7=Sun  (empty = every day)
+  List<int> targetDays;   // 1=Mon, 2=Tue â¦ 7=Sun  (empty = every day)
   DateTime? reminderTime;
   int streakCount;        // Current streak
   int bestStreak;         // All-time best
@@ -39,7 +39,7 @@ class HabitModel {
 
   Color get color => Color(colorValue);
 
-  /// Is this habit active on a given weekday? (1=Mon…7=Sun)
+  /// Is this habit active on a given weekday? (1=Monâ¦7=Sun)
   bool isActiveOnWeekday(int weekday) {
     if (targetDays.isEmpty) return true; // empty = every day
     return targetDays.contains(weekday);
@@ -89,7 +89,7 @@ class HabitModel {
     if (targetDays.isEmpty) return 'Every day';
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final sorted = List<int>.from(targetDays)..sort();
-    return sorted.map((d) => dayNames[d - 1]).join(' · ');
+    return sorted.map((d) => dayNames[d - 1]).join(' Â· ');
   }
 
   Map<String, dynamic> toMap() {
@@ -164,4 +164,52 @@ class HabitModel {
       targetDays: targetDays ?? this.targetDays,
       reminderTime: clearReminder ? null : (reminderTime ?? this.reminderTime),
       streakCount: streakCount ?? this.streakCount,
-      bestStreak: bes
+      bestStreak: bestStreak ?? this.bestStreak,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt,
+      completedDates: completedDates ?? this.completedDates,
+    );
+  }
+}
+
+/// Predefined icons for habits (user picks one when creating)
+class HabitIcons {
+  static const Map<String, IconData> icons = {
+    'fitness_center': Icons.fitness_center,
+    'self_improvement': Icons.self_improvement,
+    'menu_book': Icons.menu_book,
+    'water_drop': Icons.water_drop,
+    'bedtime': Icons.bedtime,
+    'directions_run': Icons.directions_run,
+    'restaurant': Icons.restaurant_menu,
+    'favorite': Icons.favorite,
+    'psychology': Icons.psychology,
+    'school': Icons.school,
+    'music_note': Icons.music_note,
+    'brush': Icons.brush,
+    'code': Icons.code,
+    'local_cafe': Icons.local_cafe,
+    'nature': Icons.nature,
+    'star': Icons.star,
+  };
+
+  static IconData getIcon(String name) {
+    return icons[name] ?? Icons.star;
+  }
+}
+
+/// Predefined colors for habits
+class HabitColors {
+  static const List<int> colorValues = [
+    0xFF7C3AED, // Purple
+    0xFF2563EB, // Blue
+    0xFF059669, // Emerald
+    0xFFDC2626, // Red
+    0xFFD97706, // Amber
+    0xFFDB2777, // Pink
+    0xFF0891B2, // Cyan
+    0xFF65A30D, // Lime
+    0xFF9333EA, // Fuchsia
+    0xFF0D9488, // Teal
+  ];
+}
