@@ -1,14 +1,14 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Planner Screen — Activities Organiser with Gantt chart
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Planner Screen â Activities Organiser with Gantt chart
 // v1.1.0 (new screen)
 //
 // Features:
-//   • Day / Week / Month view toggle
-//   • Gantt-style bars showing tasks on a timeline
-//   • Tap a bar to see task details
-//   • Long-press + drag a bar left/right to reschedule
-//   • Unscheduled tasks listed below the chart
-// ─────────────────────────────────────────────────────────────────────────────
+//   â¢ Day / Week / Month view toggle
+//   â¢ Gantt-style bars showing tasks on a timeline
+//   â¢ Tap a bar to see task details
+//   â¢ Long-press + drag a bar left/right to reschedule
+//   â¢ Unscheduled tasks listed below the chart
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,11 +17,11 @@ import '../../models/task_model.dart';
 import '../../providers/task_provider.dart';
 import '../../theme/app_theme.dart';
 
-// ────────────────── View mode enum ──────────────────────────────────────────
+// ââââââââââââââââââ View mode enum ââââââââââââââââââââââââââââââââââââââââââ
 
 enum _PlanView { day, week, month }
 
-// ────────────────── Main screen ─────────────────────────────────────────────
+// ââââââââââââââââââ Main screen âââââââââââââââââââââââââââââââââââââââââââââ
 
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
@@ -62,11 +62,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
-  // ── Header ────────────────────────────────────────────────────────────────
+  // ââ Header ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
   Widget _buildHeader() {
     final fmt = _view == _PlanView.day
-        ? DateFormat('EEEE, MMM d')
+        ? DateFormat('EEEE, MMM d').format(_anchor)
         : _view == _PlanView.week
             ? 'Week of ${DateFormat('MMM d').format(_weekStart)}'
             : DateFormat('MMMM yyyy').format(_anchor);
@@ -91,7 +91,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                   ),
                 ),
                 Text(
-                  _view == _PlanView.week ? fmt : fmt.toString(),
+                  fmt,
                   style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
                 ),
               ],
@@ -116,7 +116,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
-  // ── View toggle ───────────────────────────────────────────────────────────
+  // ââ View toggle âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
   Widget _buildViewToggle() {
     return Container(
@@ -161,7 +161,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
-  // ── Planner body ──────────────────────────────────────────────────────────
+  // ââ Planner body ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
   Widget _buildPlannerBody(List<TaskModel> tasks) {
     final scheduled = tasks.where((t) => t.dueDate != null && !t.isCompleted).toList();
@@ -177,7 +177,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
 
     return CustomScrollView(
       slivers: [
-        // ── Gantt chart area ───────────────────────────────────────────────
+        // ââ Gantt chart area âââââââââââââââââââââââââââââââââââââââââââââââ
         SliverToBoxAdapter(
           child: _GanttChart(
             dates: visibleDates,
@@ -188,7 +188,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
           ),
         ),
 
-        // ── Unscheduled tasks ──────────────────────────────────────────────
+        // ââ Unscheduled tasks ââââââââââââââââââââââââââââââââââââââââââââââ
         if (unscheduled.isNotEmpty) ...[
           const SliverToBoxAdapter(child: SizedBox(height: 8)),
           SliverToBoxAdapter(
@@ -226,7 +226,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
-  // ── Date navigation ───────────────────────────────────────────────────────
+  // ââ Date navigation âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
   List<DateTime> get _visibleDates {
     switch (_view) {
@@ -279,7 +279,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
     });
   }
 
-  // ── Actions ───────────────────────────────────────────────────────────────
+  // ââ Actions âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
   Future<void> _rescheduleTask(TaskModel task, DateTime newDate) async {
     final provider = context.read<TaskProvider>();
@@ -317,7 +317,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
   }
 }
 
-// ────────────────── Gantt Chart Widget ──────────────────────────────────────
+// ââââââââââââââââââ Gantt Chart Widget ââââââââââââââââââââââââââââââââââââââ
 
 class _GanttChart extends StatefulWidget {
   final List<DateTime> dates;
@@ -353,7 +353,7 @@ class _GanttChartState extends State<_GanttChart> {
     final screenWidth = MediaQuery.of(context).size.width;
     final colWidth = (screenWidth - _labelWidth) / colCount;
 
-    // Group tasks by row — each task gets its own row for clarity
+    // Group tasks by row â each task gets its own row for clarity
     final rows = widget.tasks;
     final chartHeight = _headerHeight + rows.length * _rowHeight + 16;
 
@@ -605,7 +605,7 @@ class _GanttChartState extends State<_GanttChart> {
   }
 }
 
-// ────────────────── Unscheduled task row ─────────────────────────────────────
+// ââââââââââââââââââ Unscheduled task row âââââââââââââââââââââââââââââââââââââ
 
 class _UnscheduledTaskRow extends StatelessWidget {
   final TaskModel task;
@@ -668,7 +668,7 @@ class _UnscheduledTaskRow extends StatelessWidget {
   }
 }
 
-// ────────────────── Task detail sheet ────────────────────────────────────────
+// ââââââââââââââââââ Task detail sheet ââââââââââââââââââââââââââââââââââââââââ
 
 class _TaskDetailSheet extends StatelessWidget {
   final TaskModel task;
