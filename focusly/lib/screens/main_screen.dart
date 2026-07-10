@@ -1,5 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Screen — bottom navigation shell
+// v1.1.0: Added Planner tab (Activities Organiser with Gantt chart)
+//         Nav: Home | Tasks | Planner | Habits | Projects
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import 'home/home_screen.dart';
 import 'tasks/tasks_screen.dart';
 import 'habits/habits_screen.dart';
 import 'projects/projects_screen.dart';
+import 'planner/planner_screen.dart';
 import 'tasks/add_edit_task_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -27,6 +30,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     TasksScreen(),
+    PlannerScreen(),   // NEW — Activities Organiser
     HabitsScreen(),
     ProjectsScreen(),
   ];
@@ -34,7 +38,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // Load all data on startup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TaskProvider>().loadTasks();
       context.read<HabitProvider>().loadHabits();
@@ -50,10 +53,12 @@ class _MainScreenState extends State<MainScreen> {
         children: _screens,
       ),
       bottomNavigationBar: _buildBottomNav(),
-      floatingActionButton: _buildFAB(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: _showFAB ? _buildFAB() : null,
     );
   }
+
+  /// Only show the FAB on Home, Tasks, and Habits screens
+  bool get _showFAB => _currentIndex == 0 || _currentIndex == 1 || _currentIndex == 3;
 
   Widget _buildBottomNav() {
     return Container(
@@ -63,10 +68,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
       child: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          if (index == 2) return; // FAB placeholder slot
-          setState(() => _currentIndex = index > 2 ? index - 1 : index);
-        },
+        onTap: (index) => setState(() => _currentIndex = index),
         backgroundColor: Colors.transparent,
         elevation: 0,
         selectedItemColor: AppColors.gold,
@@ -74,7 +76,7 @@ class _MainScreenState extends State<MainScreen> {
         type: BottomNavigationBarType.fixed,
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        selectedFontSize: 11,
+        selectedFontSize: 10,
         unselectedFontSize: 10,
         items: const [
           BottomNavigationBarItem(
@@ -88,8 +90,9 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Tasks',
           ),
           BottomNavigationBarItem(
-            icon: SizedBox(width: 48), // Space for FAB
-            label: '',
+            icon: Icon(Icons.view_timeline_outlined),
+            activeIcon: Icon(Icons.view_timeline),
+            label: 'Planner',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_fire_department_outlined),
@@ -130,7 +133,6 @@ class _MainScreenState extends State<MainScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               width: 40,
               height: 4,
@@ -142,11 +144,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             const Text(
               'What do you want to add?',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 20),
             Row(
@@ -173,8 +171,19 @@ class _MainScreenState extends State<MainScreen> {
                     color: AppColors.gold,
                     onTap: () {
                       Navigator.pop(ctx);
-                      setState(() => _currentIndex = 2);
-                      // Habit add screen opened from HabitsScreen
+                      setState(() => _currentIndex = 3); // Go to Habits tab
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _AddOptionCard(
+                    icon: Icons.view_timeline,
+                    label: 'Planner',
+                    color: AppColors.success,
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      setState(() => _currentIndex = 2); // Go to Planner tab
                     },
                   ),
                 ),
@@ -214,12 +223,9 @@ class _AddOptionCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 14),
-            ),
+            Icon(icon, color: color, size: 28),
+            const SizedBox(height: 6),
+            Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12)),
           ],
         ),
       ),

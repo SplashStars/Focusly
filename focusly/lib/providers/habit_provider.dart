@@ -41,6 +41,7 @@ class HabitProvider extends ChangeNotifier {
     required int colorValue,
     required String iconName,
     String frequency = 'daily',
+    List<int> targetDays = const [],
     DateTime? reminderTime,
   }) async {
     final habit = HabitModel(
@@ -50,6 +51,7 @@ class HabitProvider extends ChangeNotifier {
       colorValue: colorValue,
       iconName: iconName,
       frequency: frequency,
+      targetDays: targetDays,
       reminderTime: reminderTime,
       sortOrder: _habits.length,
       createdAt: DateTime.now(),

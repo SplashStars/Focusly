@@ -1,5 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Add/Edit Habit Screen
+// v1.1.0: Replaced simple Daily/Weekly toggle with DaySelector widget
+//         so users can tap exactly which days they want the habit active
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../models/habit_model.dart';
 import '../../providers/habit_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/common/day_selector.dart';
 
 class AddEditHabitScreen extends StatefulWidget {
   final HabitModel? habit;
@@ -25,7 +28,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
 
   int _selectedColor = HabitColors.colorValues[0];
   String _selectedIcon = 'star';
-  String _frequency = 'daily';
+  List<int> _targetDays = []; // empty = every day
   DateTime? _reminderTime;
   bool _isSaving = false;
 
@@ -40,7 +43,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
       _descController.text = h.description ?? '';
       _selectedColor = h.colorValue;
       _selectedIcon = h.iconName;
-      _frequency = h.frequency;
+      _targetDays = List<int>.from(h.targetDays);
       _reminderTime = h.reminderTime;
     }
   }
@@ -65,10 +68,19 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
         ),
         actions: [
           _isSaving
-              ? const Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold)))
+              ? const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: SizedBox(
+                    width: 20, height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold),
+                  ),
+                )
               : TextButton(
                   onPressed: _save,
-                  child: const Text('Save', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
                 ),
         ],
       ),
@@ -79,11 +91,9 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Preview card
               _buildPreview(),
               const SizedBox(height: 20),
 
-              // Name
               _buildLabel('Habit Name *'),
               TextFormField(
                 controller: _nameController,
@@ -95,7 +105,6 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Description
               _buildLabel('Description (optional)'),
               TextFormField(
                 controller: _descController,
@@ -105,29 +114,20 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Color
               _buildLabel('Color'),
               _buildColorPicker(),
               const SizedBox(height: 20),
 
-              // Icon
               _buildLabel('Icon'),
               _buildIconPicker(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              // Frequency
-              _buildLabel('Frequency'),
-              Row(
-                children: [
-                  _FreqButton(label: 'Daily', value: 'daily', selected: _frequency == 'daily', onTap: () => setState(() => _frequency = 'daily')),
-                  const SizedBox(width: 12),
-                  _FreqButton(label: 'Weekly', value: 'weekly', selected: _frequency == 'weekly', onTap: () => setState(() => _frequency = 'weekly')),
-                ],
-              ),
-              const SizedBox(height: 20),
+              // ── NEW: Days of the week selector ──────────────────────────
+              _buildLabel('Active Days'),
+              _buildScheduleSection(),
+              const SizedBox(height: 24),
 
-              // Reminder
-              _buildLabel('Daily Reminder 🔔 (FREE)'),
+              _buildLabel('Daily Reminder \u{1F514}'),
               _buildReminderPicker(),
               const SizedBox(height: 80),
             ],
@@ -138,6 +138,11 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
   }
 
   Widget _buildPreview() {
+    final sorted = List<int>.from(_targetDays)..sort();
+    final scheduleLabel = _targetDays.isEmpty
+        ? 'Every day'
+        : sorted.map((d) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d - 1]).join(' · ');
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -168,15 +173,30 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Text('🔥 0 day streak  ', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
-                    Text(_frequency == 'daily' ? 'Daily' : 'Weekly',
-                        style: TextStyle(fontSize: 12, color: Color(_selectedColor))),
+                    const Text('\u{1F525} 0 day streak  ', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    Text(scheduleLabel, style: TextStyle(fontSize: 12, color: Color(_selectedColor))),
                   ],
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildScheduleSection() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.surfaceHighlight),
+      ),
+      child: DaySelector(
+        selectedDays: _targetDays,
+        accentColor: Color(_selectedColor),
+        onChanged: (days) => setState(() => _targetDays = days),
       ),
     );
   }
@@ -234,15 +254,9 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
             decoration: BoxDecoration(
               color: isSelected ? Color(_selectedColor).withOpacity(0.2) : AppColors.surface,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: isSelected ? Color(_selectedColor) : AppColors.surfaceHighlight,
-              ),
+              border: Border.all(color: isSelected ? Color(_selectedColor) : AppColors.surfaceHighlight),
             ),
-            child: Icon(
-              entry.value,
-              size: 20,
-              color: isSelected ? Color(_selectedColor) : AppColors.textMuted,
-            ),
+            child: Icon(entry.value, size: 20, color: isSelected ? Color(_selectedColor) : AppColors.textMuted),
           ),
         );
       },
@@ -266,9 +280,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
         );
         if (time == null) return;
         final now = DateTime.now();
-        setState(() {
-          _reminderTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-        });
+        setState(() => _reminderTime = DateTime(now.year, now.month, now.day, time.hour, time.minute));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -284,8 +296,8 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
             Expanded(
               child: Text(
                 _reminderTime != null
-                    ? 'Every day at ${DateFormat('h:mm a').format(_reminderTime!)}'
-                    : 'No daily reminder',
+                    ? 'Reminder at ${DateFormat('h:mm a').format(_reminderTime!)}'
+                    : 'No reminder',
                 style: TextStyle(color: _reminderTime != null ? AppColors.textPrimary : AppColors.textMuted, fontSize: 14),
               ),
             ),
@@ -306,6 +318,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
 
     try {
       final provider = context.read<HabitProvider>();
+      final frequency = _targetDays.isEmpty ? 'daily' : 'custom';
 
       if (_isEditing) {
         final updated = widget.habit!.copyWith(
@@ -313,7 +326,8 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
           description: _descController.text.trim().isEmpty ? null : _descController.text.trim(),
           colorValue: _selectedColor,
           iconName: _selectedIcon,
-          frequency: _frequency,
+          frequency: frequency,
+          targetDays: _targetDays,
           reminderTime: _reminderTime,
           clearReminder: _reminderTime == null,
         );
@@ -324,7 +338,8 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
           description: _descController.text.trim().isEmpty ? null : _descController.text.trim(),
           colorValue: _selectedColor,
           iconName: _selectedIcon,
-          frequency: _frequency,
+          frequency: frequency,
+          targetDays: _targetDays,
           reminderTime: _reminderTime,
         );
       }
@@ -333,47 +348,11 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text('Error saving habit: $e'), backgroundColor: AppColors.error),
         );
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
-  }
-}
-
-class _FreqButton extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _FreqButton({required this.label, required this.value, required this.selected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.primary.withOpacity(0.2) : AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: selected ? AppColors.primary : AppColors.surfaceHighlight),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
-              color: selected ? AppColors.primary : AppColors.textSecondary,
-              fontSize: 14,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

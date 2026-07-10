@@ -1,5 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Habit Model — daily habits with streaks (users specifically requested this!)
+// Habit Model — daily habits with streaks
+// v1.1.0: Added targetDays — user can pick specific days of the week
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -9,12 +10,13 @@ class HabitModel {
   final String id;
   String name;
   String? description;
-  int colorValue;       // Stored as int (ARGB)
-  String iconName;      // Material icon name string
-  String frequency;     // 'daily' or 'weekly'
+  int colorValue;         // Stored as int (ARGB)
+  String iconName;        // Material icon name string
+  String frequency;       // 'daily' or 'custom'
+  List<int> targetDays;   // 1=Mon, 2=Tue … 7=Sun  (empty = every day)
   DateTime? reminderTime;
-  int streakCount;      // Current streak
-  int bestStreak;       // All-time best
+  int streakCount;        // Current streak
+  int bestStreak;         // All-time best
   int sortOrder;
   DateTime createdAt;
   List<DateTime> completedDates; // dates this habit was done
@@ -26,6 +28,7 @@ class HabitModel {
     required this.colorValue,
     required this.iconName,
     this.frequency = 'daily',
+    this.targetDays = const [],
     this.reminderTime,
     this.streakCount = 0,
     this.bestStreak = 0,
@@ -35,6 +38,14 @@ class HabitModel {
   });
 
   Color get color => Color(colorValue);
+
+  /// Is this habit active on a given weekday? (1=Mon…7=Sun)
+  bool isActiveOnWeekday(int weekday) {
+    if (targetDays.isEmpty) return true; // empty = every day
+    return targetDays.contains(weekday);
+  }
+
+  bool get isActiveToday => isActiveOnWeekday(DateTime.now().weekday);
 
   /// Check if habit was completed today
   bool get isCompletedToday {
@@ -49,18 +60,20 @@ class HabitModel {
         date.year == day.year && date.month == day.month && date.day == day.day);
   }
 
-  /// Calculate this week's completion (Mon–today or Mon–Sun)
+  /// This week's completion rate (only counts active days)
   double get weeklyCompletionRate {
     final now = DateTime.now();
-    // Find Monday of this week
     final monday = now.subtract(Duration(days: now.weekday - 1));
-    int daysToCount = now.weekday; // 1=Mon ... 7=Sun
+    int activeDays = 0;
     int completed = 0;
-    for (int i = 0; i < daysToCount; i++) {
+    for (int i = 0; i < now.weekday; i++) {
       final day = monday.add(Duration(days: i));
-      if (isCompletedOn(day)) completed++;
+      if (isActiveOnWeekday(day.weekday)) {
+        activeDays++;
+        if (isCompletedOn(day)) completed++;
+      }
     }
-    return daysToCount > 0 ? completed / daysToCount : 0.0;
+    return activeDays > 0 ? completed / activeDays : 0.0;
   }
 
   /// Get the last 7 days completion status
@@ -71,6 +84,14 @@ class HabitModel {
     });
   }
 
+  /// Human-readable schedule label
+  String get scheduleLabel {
+    if (targetDays.isEmpty) return 'Every day';
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final sorted = List<int>.from(targetDays)..sort();
+    return sorted.map((d) => dayNames[d - 1]).join(' · ');
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -79,6 +100,7 @@ class HabitModel {
       'color': colorValue,
       'icon_name': iconName,
       'frequency': frequency,
+      'target_days': targetDays.isEmpty ? null : targetDays.join(','),
       'reminder_time': reminderTime?.toIso8601String(),
       'streak_count': streakCount,
       'best_streak': bestStreak,
@@ -88,6 +110,18 @@ class HabitModel {
   }
 
   factory HabitModel.fromMap(Map<String, dynamic> map) {
+    // Parse target_days from comma-separated string e.g. "1,3,5"
+    List<int> parsedDays = [];
+    final raw = map['target_days'];
+    if (raw != null && raw.toString().isNotEmpty) {
+      parsedDays = raw
+          .toString()
+          .split(',')
+          .map((s) => int.tryParse(s.trim()) ?? 0)
+          .where((d) => d >= 1 && d <= 7)
+          .toList();
+    }
+
     return HabitModel(
       id: map['id'] as String,
       name: map['name'] as String,
@@ -95,6 +129,7 @@ class HabitModel {
       colorValue: map['color'] as int,
       iconName: map['icon_name'] as String? ?? 'star',
       frequency: map['frequency'] as String? ?? 'daily',
+      targetDays: parsedDays,
       reminderTime: map['reminder_time'] != null
           ? DateTime.parse(map['reminder_time'] as String)
           : null,
@@ -111,6 +146,7 @@ class HabitModel {
     int? colorValue,
     String? iconName,
     String? frequency,
+    List<int>? targetDays,
     DateTime? reminderTime,
     int? streakCount,
     int? bestStreak,
@@ -125,54 +161,7 @@ class HabitModel {
       colorValue: colorValue ?? this.colorValue,
       iconName: iconName ?? this.iconName,
       frequency: frequency ?? this.frequency,
+      targetDays: targetDays ?? this.targetDays,
       reminderTime: clearReminder ? null : (reminderTime ?? this.reminderTime),
       streakCount: streakCount ?? this.streakCount,
-      bestStreak: bestStreak ?? this.bestStreak,
-      sortOrder: sortOrder ?? this.sortOrder,
-      createdAt: createdAt,
-      completedDates: completedDates ?? this.completedDates,
-    );
-  }
-}
-
-/// Predefined icons for habits (user picks one when creating)
-class HabitIcons {
-  static const Map<String, IconData> icons = {
-    'fitness_center': Icons.fitness_center,
-    'self_improvement': Icons.self_improvement,
-    'menu_book': Icons.menu_book,
-    'water_drop': Icons.water_drop,
-    'bedtime': Icons.bedtime,
-    'directions_run': Icons.directions_run,
-    'restaurant': Icons.restaurant_menu,
-    'favorite': Icons.favorite,
-    'psychology': Icons.psychology,
-    'school': Icons.school,
-    'music_note': Icons.music_note,
-    'brush': Icons.brush,
-    'code': Icons.code,
-    'local_cafe': Icons.local_cafe,
-    'nature': Icons.nature,
-    'star': Icons.star,
-  };
-
-  static IconData getIcon(String name) {
-    return icons[name] ?? Icons.star;
-  }
-}
-
-/// Predefined colors for habits
-class HabitColors {
-  static const List<int> colorValues = [
-    0xFF7C3AED, // Purple
-    0xFF2563EB, // Blue
-    0xFF059669, // Emerald
-    0xFFDC2626, // Red
-    0xFFD97706, // Amber
-    0xFFDB2777, // Pink
-    0xFF0891B2, // Cyan
-    0xFF65A30D, // Lime
-    0xFF9333EA, // Fuchsia
-    0xFF0D9488, // Teal
-  ];
-}
+      bestStreak: bes

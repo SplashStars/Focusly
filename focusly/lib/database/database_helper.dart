@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Database Helper — SQLite CRUD for tasks, habits, projects
 // All data is stored locally on the phone. No internet needed.
+// v1.1.0: DB version → 2 (adds target_days column to habits)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:sqflite/sqflite.dart';
@@ -14,7 +15,7 @@ class DatabaseHelper {
   static DatabaseHelper? _instance;
   static Database? _database;
   static const _dbName = 'focusly.db';
-  static const _dbVersion = 1;
+  static const _dbVersion = 2; // v2: adds target_days to habits
   static final _uuid = Uuid();
 
   // Singleton pattern — only one database instance
@@ -29,7 +30,21 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, _dbName);
-    return await openDatabase(path, version: _dbVersion, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: _dbVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
+  }
+
+  /// Migrate existing database to a newer version
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // v2: add target_days column to habits table
+      // NULL = every day (backwards compatible with existing habits)
+      await db.execute('ALTER TABLE habits ADD COLUMN target_days TEXT');
+    }
   }
 
   /// Create all database tables on first launch
@@ -65,7 +80,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // Habits table
+    // Habits table (v2: includes target_days)
     await db.execute('''
       CREATE TABLE habits (
         id TEXT PRIMARY KEY,
@@ -74,6 +89,7 @@ class DatabaseHelper {
         color INTEGER NOT NULL,
         icon_name TEXT NOT NULL DEFAULT 'star',
         frequency TEXT NOT NULL DEFAULT 'daily',
+        target_days TEXT,
         reminder_time TEXT,
         streak_count INTEGER NOT NULL DEFAULT 0,
         best_streak INTEGER NOT NULL DEFAULT 0,
@@ -376,25 +392,4 @@ class DatabaseHelper {
     final completedDays = completions.map((d) => DateTime(d.year, d.month, d.day)).toSet();
 
     int streak = 0;
-    DateTime day = DateTime.now();
-
-    while (completedDays.contains(DateTime(day.year, day.month, day.day))) {
-      streak++;
-      day = day.subtract(const Duration(days: 1));
-    }
-
-    // Also check best streak
-    final existing = await db.query('habits', where: 'id = ?', whereArgs: [habitId]);
-    final currentBest = (existing.first['best_streak'] as int?) ?? 0;
-
-    await db.update(
-      'habits',
-      {
-        'streak_count': streak,
-        'best_streak': streak > currentBest ? streak : currentBest,
-      },
-      where: 'id = ?',
-      whereArgs: [habitId],
-    );
-  }
-}
+    DateTime day = DateT
