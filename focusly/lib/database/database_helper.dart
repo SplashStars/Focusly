@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Database Helper — SQLite CRUD for tasks, habits, projects
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Database Helper â SQLite CRUD for tasks, habits, projects
 // All data is stored locally on the phone. No internet needed.
-// v1.1.0: DB version → 2 (adds target_days column to habits)
-// ─────────────────────────────────────────────────────────────────────────────
+// v1.1.0: DB version â 2 (adds target_days column to habits)
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -18,7 +18,7 @@ class DatabaseHelper {
   static const _dbVersion = 2; // v2: adds target_days to habits
   static final _uuid = Uuid();
 
-  // Singleton pattern — only one database instance
+  // Singleton pattern â only one database instance
   DatabaseHelper._();
   static DatabaseHelper get instance => _instance ??= DatabaseHelper._();
 
@@ -131,7 +131,7 @@ class DatabaseHelper {
     final taskId1 = _uuid.v4();
     await db.insert('tasks', {
       'id': taskId1,
-      'title': '👋 Welcome to Focusly! Tap to mark complete',
+      'title': 'ð Welcome to Focusly! Tap to mark complete',
       'description': 'Swipe right to complete, swipe left to delete any task.',
       'project_id': projectId,
       'priority': 2,
@@ -144,7 +144,7 @@ class DatabaseHelper {
 
     await db.insert('tasks', {
       'id': _uuid.v4(),
-      'title': '📋 Add your first task using the + button',
+      'title': 'ð Add your first task using the + button',
       'project_id': projectId,
       'priority': 1,
       'due_date': now.toIso8601String(),
@@ -157,7 +157,7 @@ class DatabaseHelper {
     // Sample habit
     await db.insert('habits', {
       'id': _uuid.v4(),
-      'name': 'Morning Workout 💪',
+      'name': 'Morning Workout ðª',
       'description': 'Exercise for at least 20 minutes',
       'color': 0xFF2563EB,
       'icon_name': 'fitness_center',
@@ -169,7 +169,7 @@ class DatabaseHelper {
     });
   }
 
-  // ──────────────────────────── PROJECTS ──────────────────────────────────────
+  // ââââââââââââââââââââââââââââ PROJECTS ââââââââââââââââââââââââââââââââââââââ
 
   Future<List<ProjectModel>> getProjects() async {
     final db = await database;
@@ -205,7 +205,7 @@ class DatabaseHelper {
     await db.delete('projects', where: 'id = ?', whereArgs: [id]);
   }
 
-  // ──────────────────────────── TASKS ─────────────────────────────────────────
+  // ââââââââââââââââââââââââââââ TASKS âââââââââââââââââââââââââââââââââââââââââ
 
   /// Get all tasks (top-level only) with their subtasks attached
   Future<List<TaskModel>> getTasks({
@@ -308,7 +308,7 @@ class DatabaseHelper {
     );
   }
 
-  // ──────────────────────────── HABITS ────────────────────────────────────────
+  // ââââââââââââââââââââââââââââ HABITS ââââââââââââââââââââââââââââââââââââââââ
 
   Future<List<HabitModel>> getHabits() async {
     final db = await database;
@@ -392,4 +392,25 @@ class DatabaseHelper {
     final completedDays = completions.map((d) => DateTime(d.year, d.month, d.day)).toSet();
 
     int streak = 0;
-    DateTime day = DateT
+    DateTime day = DateTime.now();
+
+    while (completedDays.contains(DateTime(day.year, day.month, day.day))) {
+      streak++;
+      day = day.subtract(const Duration(days: 1));
+    }
+
+    // Also check best streak
+    final existing = await db.query('habits', where: 'id = ?', whereArgs: [habitId]);
+    final currentBest = (existing.first['best_streak'] as int?) ?? 0;
+
+    await db.update(
+      'habits',
+      {
+        'streak_count': streak,
+        'best_streak': streak > currentBest ? streak : currentBest,
+      },
+      where: 'id = ?',
+      whereArgs: [habitId],
+    );
+  }
+}
