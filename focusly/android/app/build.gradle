@@ -15,7 +15,7 @@ def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "
 def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0.0"
 
 android {
-    // Your app's unique ID — change "com.example" to your own domain before publishing!
+    // Your app's unique ID - change "com.example" to your own domain before publishing!
     namespace "com.example.focusly"
 
     compileSdk flutter.compileSdkVersion
@@ -58,7 +58,7 @@ android {
             // own signing key (see SETUP_GUIDE.md Part 4 Step 2)
             signingConfig signingConfigs.debug
 
-            // R8 runs even with minifyEnabled false — proguard-rules.pro
+            // R8 runs even with minifyEnabled false - proguard-rules.pro
             // fixes the Gson TypeToken crash in flutter_local_notifications
             minifyEnabled false
             shrinkResources false
