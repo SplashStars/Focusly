@@ -85,13 +85,6 @@ jobs:
         working-directory: focusly
         run: flutter pub get
 
-      # ── 6b. Maven mirror fix (repo.maven.apache.org returns 403 on GH runners)
-      - name: Add Maven Central mirror init script
-        run: |
-          mkdir -p ~/.gradle/init.d
-          echo "YWxscHJvamVjdHMgewogIGJ1aWxkc2NyaXB0IHsgcmVwb3NpdG9yaWVzIHsgbWF2ZW4geyB1cmwgJ2h0dHBzOi8vcmVwbzEubWF2ZW4ub3JnL21hdmVuMi8nIH0gfSB9CiAgcmVwb3NpdG9yaWVzIHsgbWF2ZW4geyB1cmwgJ2h0dHBzOi8vcmVwbzEubWF2ZW4ub3JnL21hdmVuMi8nIH0gfQp9Cg==" | base64 -d > ~/.gradle/init.d/maven-mirror.gradle
-          cat ~/.gradle/init.d/maven-mirror.gradle
-
       # ── 7a. Build debug APK ──────────────────────────────────────────────────
       - name: Build debug APK
         if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'debug' }}
