@@ -1,16 +1,16 @@
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-# Focusly â GitHub Actions build workflow
+# ──────────────────────────────────────────────────────────────────────────
+# Focusly – GitHub Actions build workflow
 # v1.1.0
 #
 # Triggers:
-#   â¢ Push to main â builds debug APK automatically
-#   â¢ Manual trigger â choose debug, release APK, or playstore AAB
+#   • Push to main → builds debug APK automatically
+#   • Manual trigger → choose debug, release APK, or playstore AAB
 #
 # Artifacts produced:
-#   â¢ focusly-debug-apk      (always)   â install directly on phone for testing
-#   â¢ focusly-release-apk   (manual)   â unsigned release APK
-#   â¢ focusly-play-store-aab (manual)  â signed AAB for Google Play upload
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+#   • focusly-debug-apk      (always)   – install directly on phone for testing
+#   • focusly-release-apk   (manual)   – unsigned release APK
+#   • focusly-play-store-aab (manual)  – signed AAB for Google Play upload
+# ──────────────────────────────────────────────────────────────────────────
 
 name: Build Focusly APK
 
@@ -34,18 +34,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ââ 1. Get the code ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 1. Get the code ────────────────────────────────────────────────────
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ââ 2. Java ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 2. Java ────────────────────────────────────────────────────────────
       - name: Setup Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # ââ 2b. Cache Gradle dependencies âââââââââââââââââââââââââââââââââââââ
+      # ── 2b. Cache Gradle dependencies ─────────────────────────────────────
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
@@ -56,7 +56,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # ââ 3. Flutter âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 3. Flutter ─────────────────────────────────────────────────────────
       - name: Setup Flutter 3.22.3
         uses: subosito/flutter-action@v2
         with:
@@ -67,11 +67,11 @@ jobs:
       - name: Verify Flutter version
         run: flutter --version
 
-      # ââ 4. Android licenses ââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 4. Android licenses ────────────────────────────────────────────────
       - name: Accept Android SDK licenses
         run: yes | flutter doctor --android-licenses || true
 
-      # ââ 5. Launcher icons ââââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 5. Launcher icons ──────────────────────────────────────────────────
       - name: Generate launcher icons
         run: |
           flutter create --org com.example --project-name focusly /tmp/icon_source
@@ -82,12 +82,12 @@ jobs:
           cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxxhdpi focusly/android/app/src/main/res/
           echo "Launcher icons ready."
 
-      # ââ 6. Flutter packages ââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 6. Flutter packages ────────────────────────────────────────────────
       - name: Install Flutter packages
         working-directory: focusly
         run: flutter pub get
 
-      # ââ 6b. Decode keystore (playstore builds only) ââââââââââââââââââââââââ
+      # ── 6b. Decode keystore (playstore builds only) ────────────────────────
       - name: Decode release keystore
         if: ${{ github.event.inputs.build_type == 'playstore' }}
         env:
@@ -96,7 +96,7 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 -d > /tmp/focusly-release.keystore
           echo "Keystore decoded: $(ls -lh /tmp/focusly-release.keystore)"
 
-      # ââ 7a. Build debug APK ââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 7a. Build debug APK ────────────────────────────────────────────────
       - name: Build debug APK
         if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'debug' }}
         working-directory: focusly
@@ -110,7 +110,7 @@ jobs:
           path: focusly/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 30
 
-      # ââ 7b. Build release APK (manual trigger only) âââââââââââââââââââââââ
+      # ── 7b. Build release APK (manual trigger only) ───────────────────────
       - name: Build release APK
         if: ${{ github.event.inputs.build_type == 'release' }}
         working-directory: focusly
@@ -124,7 +124,7 @@ jobs:
           path: focusly/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
-      # ââ 7c. Build signed release AAB for Google Play (playstore only) ââââââ
+      # ── 7c. Build signed release AAB for Google Play (playstore only) ──────
       - name: Build signed release AAB
         if: ${{ github.event.inputs.build_type == 'playstore' }}
         working-directory: focusly
@@ -143,7 +143,7 @@ jobs:
           path: focusly/build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
 
-      # ââ 8. Print result ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+      # ── 8. Print result ────────────────────────────────────────────────────
       - name: Build summary
         run: |
           echo "======================================="
