@@ -36,7 +36,7 @@ class PaywallScreen extends StatelessWidget {
                   ),
                   child: iap.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Unlock for $2.99', style: TextStyle(fontSize: 18, color: Colors.white)),
+                      : const Text('Unlock for \$2.99', style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
               ),
               const SizedBox(height: 16),
