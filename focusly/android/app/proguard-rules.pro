@@ -1,12 +1,9 @@
-# âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-# Focusly â ProGuard / R8 rules
+# ───────────────────────────────────────────────────────────────────────────
+# Focusly – ProGuard / R8 rules
 # Version: 1.1.0
-# âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ───────────────────────────────────────────────────────────────────────────
 
-# ââ CRITICAL FIX: Gson TypeToken (flutter_local_notifications crash) âââââââââ
-# Without these rules, R8 strips the generic type signature from TypeToken
-# subclasses, causing: java.lang.RuntimeException: Missing type parameter.
-# This manifests as a PlatformException when saving or cancelling a task.
+# ── CRITICAL FIX: Gson TypeToken (flutter_local_notifications crash) ─────────
 -keepattributes Signature
 -keepattributes *Annotation*
 -keep class com.google.gson.** { *; }
@@ -14,18 +11,24 @@
 -keep class * extends com.google.gson.reflect.TypeToken { *; }
 -keep public class * implements java.lang.reflect.Type
 
-# ââ flutter_local_notifications âââââââââââââââââââââââââââââââââââââââââââââââ
+# ── flutter_local_notifications ───────────────────────────────────────────────
 -keep class com.dexterous.** { *; }
 -keepclassmembers class com.dexterous.** { *; }
 
-# ââ Flutter engine ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ── Flutter engine ────────────────────────────────────────────────────────────
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
 
-# ââ SQLite / sqflite âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ── SQLite / sqflite ─────────────────────────────────────────────────────────
 -keep class com.tekartik.** { *; }
 
-# ââ General Android ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ── Google Play Billing (in_app_purchase) ────────────────────────────────────
+-keep class com.android.billingclient.** { *; }
+-keep interface com.android.billingclient.** { *; }
+-keepclassmembers class com.android.billingclient.** { *; }
+-dontwarn com.android.billingclient.**
+
+# ── General Android ───────────────────────────────────────────────────────────
 -keepclassmembers class * implements android.os.Parcelable {
   public static final android.os.Parcelable$Creator CREATOR;
 }
