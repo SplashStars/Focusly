@@ -133,7 +133,7 @@ jobs:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: flutter build appbundle --release --verbose
+        run: flutter build appbundle --release
 
       - name: Upload AAB for Google Play
         if: ${{ github.event.inputs.build_type == 'playstore' }}
