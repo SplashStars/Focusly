@@ -57,10 +57,10 @@ class IAPService extends ChangeNotifier {
           _isPurchased = true;
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool(_purchasedKey, true);
+          await _iap.completePurchase(p);
         } else if (p.status == PurchaseStatus.error) {
           _error = p.error?.message ?? 'Purchase failed';
         }
-        if (p.pendingCompletionData != null) await _iap.completePurchase(p);
       }
     }
     _isLoading = false; notifyListeners();
