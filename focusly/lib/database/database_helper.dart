@@ -131,7 +131,7 @@ class DatabaseHelper {
     final taskId1 = _uuid.v4();
     await db.insert('tasks', {
       'id': taskId1,
-      'title': 'ð Welcome to Focusly! Tap to mark complete',
+      'title': 'Welcome to Focusly - tap the circle to complete',
       'description': 'Swipe right to complete, swipe left to delete any task.',
       'project_id': projectId,
       'priority': 2,
@@ -144,7 +144,7 @@ class DatabaseHelper {
 
     await db.insert('tasks', {
       'id': _uuid.v4(),
-      'title': 'ð Add your first task using the + button',
+      'title': 'Add your own task with the + button',
       'project_id': projectId,
       'priority': 1,
       'due_date': now.toIso8601String(),
@@ -157,7 +157,7 @@ class DatabaseHelper {
     // Sample habit
     await db.insert('habits', {
       'id': _uuid.v4(),
-      'name': 'Morning Workout ðª',
+      'name': 'Morning workout',
       'description': 'Exercise for at least 20 minutes',
       'color': 0xFF2563EB,
       'icon_name': 'fitness_center',

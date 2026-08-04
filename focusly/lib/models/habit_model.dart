@@ -89,7 +89,7 @@ class HabitModel {
     if (targetDays.isEmpty) return 'Every day';
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final sorted = List<int>.from(targetDays)..sort();
-    return sorted.map((d) => dayNames[d - 1]).join(' Â· ');
+    return sorted.map((d) => dayNames[d - 1]).join(' · ');
   }
 
   Map<String, dynamic> toMap() {
