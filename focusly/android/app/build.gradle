@@ -22,7 +22,7 @@ android {
         kotlinOptions { jvmTarget = "1.8" }
         defaultConfig {
                     applicationId "com.splashstars.focusly"
-            minSdk 21
+            minSdk 23
                             targetSdk 35
                                 versionCode 8
                     versionName "1.1.1"

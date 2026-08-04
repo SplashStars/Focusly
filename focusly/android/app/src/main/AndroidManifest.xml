@@ -54,6 +54,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
+
+        <!-- Google AdMob application ID.
+             Currently Google's official TEST app id. Replace with the real
+             AdMob app id once the AdMob account is created. The app crashes on
+             launch if this meta-data tag is missing. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
     </application>
 
 </manifest>

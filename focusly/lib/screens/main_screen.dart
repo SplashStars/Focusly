@@ -19,6 +19,10 @@ import 'planner/planner_screen.dart';
 import 'focus/focus_screen.dart';
 import 'reports/reports_screen.dart';
 import 'tasks/add_edit_task_screen.dart';
+import 'upgrade/upgrade_screen.dart';
+import '../services/entitlement_service.dart';
+import '../services/ads_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -51,13 +55,60 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ent = context.watch<EntitlementService>();
+
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: Column(
+        children: [
+          if (ent.shouldNudge) _buildTrialNudge(ent),
+          Expanded(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _screens,
+            ),
+          ),
+          if (ent.showAds) const _AdBanner(),
+        ],
       ),
       bottomNavigationBar: _buildBottomNav(),
       floatingActionButton: _showFAB ? _buildFAB() : null,
+    );
+  }
+
+  /// Gentle reminder in the final two weeks of the free trial.
+  Widget _buildTrialNudge(EntitlementService ent) {
+    final days = ent.daysRemaining;
+    return Material(
+      color: AppColors.primary.withOpacity(0.18),
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const UpgradeScreen()),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              const Icon(Icons.info_outline, size: 16, color: AppColors.primaryLight),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  days == 1
+                      ? 'Last day of your free trial'
+                      : '$days days left in your free trial',
+                  style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+              const Text('See options',
+                  style: TextStyle(color: AppColors.gold, fontSize: 12, fontWeight: FontWeight.w600)),
+              const Icon(Icons.chevron_right, size: 16, color: AppColors.gold),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -241,6 +292,60 @@ class _AddOptionCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// Banner advert shown only to users who chose adverts over the one-time unlock.
+class _AdBanner extends StatefulWidget {
+  const _AdBanner();
+
+  @override
+  State<_AdBanner> createState() => _AdBannerState();
+}
+
+class _AdBannerState extends State<_AdBanner> {
+  BannerAd? _ad;
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    final ads = context.read<AdsService>();
+    await ads.initialize();
+    if (!mounted) return;
+    final banner = ads.createBanner(
+      onLoaded: () {
+        if (mounted) setState(() => _loaded = true);
+      },
+      onFailed: () {
+        if (mounted) setState(() => _loaded = false);
+      },
+    );
+    _ad = banner;
+    await banner.load();
+  }
+
+  @override
+  void dispose() {
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_ad == null || !_loaded) return const SizedBox.shrink();
+    return Container(
+      color: AppColors.surface,
+      width: double.infinity,
+      height: _ad!.size.height.toDouble(),
+      alignment: Alignment.center,
+      child: AdWidget(ad: _ad!),
     );
   }
 }

@@ -26,6 +26,10 @@ dependencies:
   uuid: ^4.5.0
   shared_preferences: ^2.3.2
 
+  # Monetisation: one-time $2.99 unlock, or free with Google AdMob adverts
+  in_app_purchase: ^3.2.0
+  google_mobile_ads: ^5.2.0
+
   # Beautiful UI
   google_fonts: ^6.2.1
   percent_indicator: ^4.2.3
