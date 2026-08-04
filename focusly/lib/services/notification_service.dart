@@ -59,6 +59,42 @@ class NotificationService {
       enableVibration: true,
       playSound: true,
     ));
+
+    // Focus session channel (Pomodoro / Deep Work completion alerts)
+    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+      'focus_sessions',
+      'Focus Sessions',
+      description: 'Alerts when a focus session or break finishes',
+      importance: Importance.high,
+      enableVibration: true,
+      playSound: true,
+    ));
+  }
+
+  /// Fire an immediate notification when a focus session or break ends.
+  Future<void> showFocusComplete({
+    required String title,
+    required String body,
+  }) async {
+    await _plugin.show(
+      920001,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'focus_sessions',
+          'Focus Sessions',
+          channelDescription: 'Alerts when a focus session or break finishes',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
   }
 
   /// Request notification permissions (needed on Android 13+)

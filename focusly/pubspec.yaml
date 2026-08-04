@@ -1,7 +1,7 @@
 name: focusly
 description: Focusly - Your Daily Planner. Tasks, habits & projects in one beautiful app.
 publish_to: 'none'
-version: 1.1.0+7
+version: 1.1.1+8
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -25,7 +25,6 @@ dependencies:
   intl: ^0.19.0
   uuid: ^4.5.0
   shared_preferences: ^2.3.2
-  in_app_purchase: ^3.2.0
 
   # Beautiful UI
   google_fonts: ^6.2.1
@@ -41,3 +40,17 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icon/
+
+# ── Launcher icon generation ────────────────────────────────────────────────
+# Generates the real Focusly icon into every mipmap density so the installed
+# launcher icon matches the Play Store hi-res icon exactly.
+# Run with: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#7C3AED"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  remove_alpha_ios: true

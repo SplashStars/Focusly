@@ -71,21 +71,32 @@ jobs:
       - name: Accept Android SDK licenses
         run: yes | flutter doctor --android-licenses || true
 
-      # ── 5. Launcher icons ──────────────────────────────────────────────────
-      - name: Generate launcher icons
-        run: |
-          flutter create --org com.example --project-name focusly /tmp/icon_source
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-hdpi    focusly/android/app/src/main/res/
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-mdpi    focusly/android/app/src/main/res/
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xhdpi   focusly/android/app/src/main/res/
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxhdpi  focusly/android/app/src/main/res/
-          cp -r /tmp/icon_source/android/app/src/main/res/mipmap-xxxhdpi focusly/android/app/src/main/res/
-          echo "Launcher icons ready."
-
       # ── 6. Flutter packages ────────────────────────────────────────────────
       - name: Install Flutter packages
         working-directory: focusly
         run: flutter pub get
+
+      # ── 6a. Launcher icons ─────────────────────────────────────────────────
+      # Generates the REAL Focusly icon (purple/gold) into every mipmap density
+      # from assets/icon/app_icon.png, so the installed launcher icon matches
+      # the Play Store hi-res icon exactly.
+      # NOTE: this previously copied the default Flutter template icons, which
+      # shipped the stock Flutter logo and caused a Play policy rejection.
+      - name: Generate launcher icons
+        working-directory: focusly
+        run: |
+          dart run flutter_launcher_icons
+          echo "--- generated mipmaps ---"
+          ls -R android/app/src/main/res/mipmap-* || true
+
+      - name: Verify launcher icon is not the Flutter default
+        working-directory: focusly
+        run: |
+          if [ ! -f android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png ]; then
+            echo "ERROR: launcher icon was not generated"; exit 1
+          fi
+          echo "Launcher icon present:"
+          ls -l android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
       # ── 6b. Decode keystore (playstore builds only) ────────────────────────
       - name: Decode release keystore

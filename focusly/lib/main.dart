@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Focusly — Your Daily Planner
-// Entry point: initializes notifications and wires up all providers
+// Entry point: initializes notifications and wires up all providers.
+// v1.1.1: Focusly is completely free. No paywall, no in-app purchases.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -11,9 +12,8 @@ import 'providers/task_provider.dart';
 import 'providers/habit_provider.dart';
 import 'providers/project_provider.dart';
 import 'services/notification_service.dart';
-import 'services/iap_service.dart';
+import 'services/focus_service.dart';
 import 'screens/main_screen.dart';
-import 'screens/paywall_screen.dart';
 
 void main() async {
   // Required before using any async Flutter APIs
@@ -25,7 +25,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize notifications (FREE reminders for all users)
+  // Initialize notifications (free reminders for all users)
   await NotificationService.instance.init();
   await NotificationService.instance.requestPermissions();
 
@@ -43,6 +43,7 @@ void main() async {
 
 class FocuslyApp extends StatelessWidget {
   const FocuslyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -50,16 +51,13 @@ class FocuslyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
         ChangeNotifierProvider(create: (_) => ProjectProvider()),
-        ChangeNotifierProvider(create: (_) => IAPService()..initialize()),
+        ChangeNotifierProvider(create: (_) => FocusService()),
       ],
       child: MaterialApp(
-        title: 'Focusly',
+        title: 'Focusly - Daily Planner',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
-        home: Consumer<IAPService>(
-          builder: (context, iap, _) =>
-              iap.isPurchased ? const MainScreen() : const PaywallScreen(),
-        ),
+        home: const MainScreen(),
       ),
     );
   }

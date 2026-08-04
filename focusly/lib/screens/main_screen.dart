@@ -1,7 +1,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Screen — bottom navigation shell
-// v1.1.0: Added Planner tab (Activities Organiser with Gantt chart)
-//         Nav: Home | Tasks | Planner | Habits | Projects
+// v1.1.1: Added Focus Mode (Pomodoro / Deep Work) and Weekly Reports.
+//         Nav: Home | Tasks | Focus | Planner | Habits | Stats
+//         Projects are reached from the add sheet and the Home screen.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ import 'tasks/tasks_screen.dart';
 import 'habits/habits_screen.dart';
 import 'projects/projects_screen.dart';
 import 'planner/planner_screen.dart';
+import 'focus/focus_screen.dart';
+import 'reports/reports_screen.dart';
 import 'tasks/add_edit_task_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -30,9 +33,10 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     TasksScreen(),
-    PlannerScreen(),   // NEW — Activities Organiser
+    FocusScreen(),     // Pomodoro / Deep Work timer
+    PlannerScreen(),   // Activities Organiser (Gantt)
     HabitsScreen(),
-    ProjectsScreen(),
+    ReportsScreen(),   // Weekly progress analytics
   ];
 
   @override
@@ -58,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   /// Only show the FAB on Home, Tasks, and Habits screens
-  bool get _showFAB => _currentIndex == 0 || _currentIndex == 1 || _currentIndex == 3;
+  bool get _showFAB => _currentIndex == 0 || _currentIndex == 1 || _currentIndex == 4;
 
   Widget _buildBottomNav() {
     return Container(
@@ -90,6 +94,11 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Tasks',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.timer_outlined),
+            activeIcon: Icon(Icons.timer),
+            label: 'Focus',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.view_timeline_outlined),
             activeIcon: Icon(Icons.view_timeline),
             label: 'Planner',
@@ -100,9 +109,9 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Habits',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.folder_outlined),
-            activeIcon: Icon(Icons.folder),
-            label: 'Projects',
+            icon: Icon(Icons.bar_chart_outlined),
+            activeIcon: Icon(Icons.bar_chart),
+            label: 'Stats',
           ),
         ],
       ),
@@ -171,19 +180,22 @@ class _MainScreenState extends State<MainScreen> {
                     color: AppColors.gold,
                     onTap: () {
                       Navigator.pop(ctx);
-                      setState(() => _currentIndex = 3); // Go to Habits tab
+                      setState(() => _currentIndex = 4); // Go to Habits tab
                     },
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _AddOptionCard(
-                    icon: Icons.view_timeline,
-                    label: 'Planner',
+                    icon: Icons.folder,
+                    label: 'Project',
                     color: AppColors.success,
                     onTap: () {
                       Navigator.pop(ctx);
-                      setState(() => _currentIndex = 2); // Go to Planner tab
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ProjectsScreen()),
+                      );
                     },
                   ),
                 ),
