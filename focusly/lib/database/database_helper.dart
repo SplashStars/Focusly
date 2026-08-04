@@ -162,8 +162,8 @@ class DatabaseHelper {
       'color': 0xFF2563EB,
       'icon_name': 'fitness_center',
       'frequency': 'daily',
-      'streak_count': 3,
-      'best_streak': 5,
+      'streak_count': 0,
+      'best_streak': 0,
       'sort_order': 0,
       'created_at': now.subtract(const Duration(days: 10)).toIso8601String(),
     });

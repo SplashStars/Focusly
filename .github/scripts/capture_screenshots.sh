@@ -111,9 +111,13 @@ dismiss_dialogs; foreground
 adb shell input tap $(( W * 3 / 12 )) "$NAV_Y"     # Tasks tab
 sleep 4
 
-# Swipe the first card right; the next card moves up into the same slot
+# task_card uses flutter_slidable with startActionPane extentRatio 0.25 and no
+# DismissiblePane: a right swipe only REVEALS a green "Done" button occupying the
+# left quarter of the card, which then has to be tapped.
 for _ in 1 2; do
-  adb shell input swipe $(( W / 4 )) $(( H * 29 / 100 )) $(( W * 9 / 10 )) $(( H * 29 / 100 )) 400
+  adb shell input swipe $(( W / 4 )) $(( H * 29 / 100 )) $(( W * 6 / 10 )) $(( H * 29 / 100 )) 400
+  sleep 2
+  adb shell input tap $(( W / 8 )) $(( H * 29 / 100 ))   # tap the revealed "Done"
   sleep 3
   dismiss_dialogs
 done
