@@ -14,8 +14,8 @@ class AdConfig {
   /// it serves real-looking test ads and never generates invalid traffic.
   static const String testBanner = 'ca-app-pub-3940256099942544/6300978111';
 
-  /// Real AdMob banner unit id. Empty until the AdMob account is created.
-  static const String prodBanner = '';
+  /// Real AdMob banner unit id (AdMob app: Focusly - Daily Planner).
+  static const String prodBanner = 'ca-app-pub-3026343596333452/6605493259';
 
   /// Uses the production unit when configured, otherwise the test unit.
   static String get bannerUnitId {
