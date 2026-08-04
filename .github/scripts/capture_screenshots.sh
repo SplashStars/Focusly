@@ -93,16 +93,40 @@ shot () {  # shot <navIndex> <name>
   echo "     saved $(stat -c%s "$OUT/$(printf '%02d' $((i+2)))_${name}.png") bytes"
 }
 
-# Home is already on screen
+# ── Capture the "to do" states first ────────────────────────────────────────
 dismiss_dialogs; foreground
 adb exec-out screencap -p > "$OUT/01_home.png"
 echo "  saved 01_home.png"
 
-shot 1 tasks
+shot 1 tasks      # tasks still outstanding
 shot 2 focus
 shot 3 planner
 shot 4 habits
-shot 5 stats
+
+# ── Generate REAL activity so the Weekly Report is not an empty state ───────
+# Tasks complete by swiping right (flutter_slidable), habits toggle by tapping
+# the ring. This is genuine app behaviour, not seeded fake history.
+echo "Generating real activity for the report..."
+dismiss_dialogs; foreground
+adb shell input tap $(( W * 3 / 12 )) "$NAV_Y"     # Tasks tab
+sleep 4
+
+# Swipe the first card right; the next card moves up into the same slot
+for _ in 1 2; do
+  adb shell input swipe $(( W / 4 )) $(( H * 29 / 100 )) $(( W * 9 / 10 )) $(( H * 29 / 100 )) 400
+  sleep 3
+  dismiss_dialogs
+done
+
+# Complete the habit from the Home screen (tap its progress ring)
+adb shell input tap $(( W / 12 )) "$NAV_Y"          # Home tab
+sleep 4
+adb shell input tap $(( W * 16 / 100 )) $(( H * 695 / 1000 ))
+sleep 3
+dismiss_dialogs
+adb exec-out screencap -p > "$OUT/02_home_progress.png"
+
+shot 5 stats      # now populated with real completions
 
 # Focus tab with a session actually running
 dismiss_dialogs; foreground

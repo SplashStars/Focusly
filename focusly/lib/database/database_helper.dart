@@ -131,7 +131,7 @@ class DatabaseHelper {
     final taskId1 = _uuid.v4();
     await db.insert('tasks', {
       'id': taskId1,
-      'title': 'Welcome to Focusly - tap the circle to complete',
+      'title': 'Welcome to Focusly - swipe right to complete',
       'description': 'Swipe right to complete, swipe left to delete any task.',
       'project_id': projectId,
       'priority': 2,
