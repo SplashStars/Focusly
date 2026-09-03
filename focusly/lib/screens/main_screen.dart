@@ -36,11 +36,10 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    TasksScreen(),
-    FocusScreen(),     // Pomodoro / Deep Work timer
+    FocusScreen(),     // Timer wheel, Strict Mode, Full Screen
     PlannerScreen(),   // Activities Organiser (Gantt)
     HabitsScreen(),
-    ReportsScreen(),   // Weekly progress analytics
+    ReportsScreen(),   // Weekly / Monthly / Yearly
   ];
 
   @override
@@ -113,7 +112,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   /// Only show the FAB on Home, Tasks, and Habits screens
-  bool get _showFAB => _currentIndex == 0 || _currentIndex == 1 || _currentIndex == 4;
+  bool get _showFAB => _currentIndex == 0 || _currentIndex == 3;
 
   Widget _buildBottomNav() {
     return Container(
@@ -140,11 +139,6 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle_outline),
-            activeIcon: Icon(Icons.check_circle),
-            label: 'Tasks',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.timer_outlined),
             activeIcon: Icon(Icons.timer),
             label: 'Focus',
@@ -157,12 +151,12 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.local_fire_department_outlined),
             activeIcon: Icon(Icons.local_fire_department),
-            label: 'Habits',
+            label: 'Habit',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart_outlined),
             activeIcon: Icon(Icons.bar_chart),
-            label: 'Stats',
+            label: 'Report',
           ),
         ],
       ),
@@ -231,7 +225,7 @@ class _MainScreenState extends State<MainScreen> {
                     color: AppColors.gold,
                     onTap: () {
                       Navigator.pop(ctx);
-                      setState(() => _currentIndex = 4); // Go to Habits tab
+                      setState(() => _currentIndex = 3); // Go to Habit tab
                     },
                   ),
                 ),
