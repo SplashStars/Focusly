@@ -11,6 +11,7 @@ import '../../providers/habit_provider.dart';
 import '../../widgets/task_card.dart';
 import '../../widgets/habit_card.dart';
 import '../tasks/add_edit_task_screen.dart';
+import '../tasks/tasks_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -37,7 +38,7 @@ class HomeScreen extends StatelessWidget {
           slivers: [
             _buildHeader(context),
             _buildStatsRow(context),
-            _buildSectionHeader('Today\'s Focus 🎯'),
+            _buildSectionHeader('Today\'s Focus 🎯', seeAllContext: context),
             _buildTodayTasks(context),
             _buildSectionHeader('Daily Habits 🔥'),
             _buildHabits(context),
@@ -151,17 +152,43 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, {BuildContext? seeAllContext}) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            // Tasks is no longer a bottom tab, so keep the full task manager
+            // (filters, sorting, projects) reachable from here.
+            if (seeAllContext != null)
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  seeAllContext,
+                  MaterialPageRoute(builder: (_) => const TasksScreen()),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('All tasks',
+                        style: TextStyle(
+                            color: AppColors.gold,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600)),
+                    Icon(Icons.chevron_right, size: 16, color: AppColors.gold),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );
