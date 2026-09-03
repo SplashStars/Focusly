@@ -352,9 +352,20 @@ class DatabaseHelper {
   }
 
   /// Toggle today's completion for a habit
-  Future<bool> toggleHabitCompletion(String habitId) async {
+  /// Toggle today's completion.
+  Future<bool> toggleHabitCompletion(String habitId) =>
+      toggleHabitCompletionOn(habitId, DateTime.now());
+
+  /// Toggle the completion for ANY day, so a user can back-fill a day they
+  /// forgot to tick. Future dates are rejected.
+  Future<bool> toggleHabitCompletionOn(String habitId, DateTime day) async {
     final db = await database;
-    final now = DateTime.now();
+    final todayNow = DateTime.now();
+    final target = DateTime(day.year, day.month, day.day);
+    final todayMidnight = DateTime(todayNow.year, todayNow.month, todayNow.day);
+    if (target.isAfter(todayMidnight)) return false; // cannot tick the future
+
+    final now = target;
     final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
     // Check if already completed today
@@ -391,8 +402,15 @@ class DatabaseHelper {
     final completions = await _getHabitCompletions(habitId);
     final completedDays = completions.map((d) => DateTime(d.year, d.month, d.day)).toSet();
 
+    // Count back from today. If today has not been ticked YET, start from
+    // yesterday - otherwise a 10-day streak reads as 0 every morning until the
+    // user opens the app and ticks it, which is needlessly punishing.
     int streak = 0;
-    DateTime day = DateTime.now();
+    final nowDay = DateTime.now();
+    DateTime day = DateTime(nowDay.year, nowDay.month, nowDay.day);
+    if (!completedDays.contains(day)) {
+      day = day.subtract(const Duration(days: 1));
+    }
 
     while (completedDays.contains(DateTime(day.year, day.month, day.day))) {
       streak++;
