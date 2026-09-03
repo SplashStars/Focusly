@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
+    <!-- Strict Mode: toggle Do Not Disturb during a focus session. Requires the
+         user to grant DND access; only requested when Strict Mode is enabled. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+
     <application
         android:label="Focusly - Daily Planner"
         android:name="${applicationName}"
