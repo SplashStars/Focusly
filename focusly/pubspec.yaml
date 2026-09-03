@@ -1,7 +1,7 @@
 name: focusly
 description: Focusly - Your Daily Planner. Tasks, habits & projects in one beautiful app.
 publish_to: 'none'
-version: 1.1.1+9
+version: 1.1.2+10
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -26,8 +26,11 @@ dependencies:
   uuid: ^4.5.0
   shared_preferences: ^2.3.2
 
-  # Monetisation: one-time $2.99 unlock, or free with Google AdMob adverts
-  in_app_purchase: ^3.2.0
+  # Monetisation: one-time unlock, or free with Google AdMob adverts.
+  # 3.3.0+ pulls in_app_purchase_android 0.5.x, which upgrades the Google Play
+  # Billing Library from 7.1.1 to 8.0.0 - mandatory for Play submissions since
+  # 31 Aug 2026.
+  in_app_purchase: ^3.3.0
   google_mobile_ads: ^5.2.0
 
   # Beautiful UI
@@ -47,9 +50,8 @@ flutter:
   assets:
     - assets/icon/
 
-# ── Launcher icon generation ────────────────────────────────────────────────
-# Generates the real Focusly icon into every mipmap density so the installed
-# launcher icon matches the Play Store hi-res icon exactly.
+# Launcher icon generation - generates the real Focusly icon into every mipmap
+# density so the installed launcher icon matches the Play Store hi-res icon.
 # Run with: dart run flutter_launcher_icons
 flutter_launcher_icons:
   android: "ic_launcher"
