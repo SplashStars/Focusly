@@ -92,6 +92,13 @@ class HabitProvider extends ChangeNotifier {
   }
 
   /// Toggle completion for today — returns true if now completed
+  /// Toggle a habit for a specific day (back-fill a day the user missed).
+  Future<bool> toggleHabitOn(String habitId, DateTime day) async {
+    final result = await _db.toggleHabitCompletionOn(habitId, day);
+    await loadHabits();
+    return result;
+  }
+
   Future<bool> toggleHabitToday(String habitId) async {
     final completed = await _db.toggleHabitCompletion(habitId);
     await loadHabits();
