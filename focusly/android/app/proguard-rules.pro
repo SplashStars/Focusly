@@ -38,3 +38,15 @@
 # Google Play Feature Delivery (required by Flutter FlutterPlayStoreSplitApplication)
 -dontwarn com.google.android.play.core.**
 -keep class com.google.android.play.core.** { *; }
+
+# -- Google Mobile Ads (AdMob) ------------------------------------------------
+-keep class com.google.android.gms.ads.** { *; }
+-keep class io.flutter.plugins.googlemobileads.** { *; }
+-dontwarn com.google.android.gms.ads.**
+
+# -- Play Billing 8 -----------------------------------------------------------
+-keep class com.android.billingclient.api.** { *; }
+
+# -- App classes reached via the DND platform channel -------------------------
+-keep class com.splashstars.focusly.** { *; }
+-keepattributes RuntimeVisibleAnnotations
