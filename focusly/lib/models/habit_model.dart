@@ -76,6 +76,28 @@ class HabitModel {
     return activeDays > 0 ? completed / activeDays : 0.0;
   }
 
+  /// The last 7 calendar dates, oldest first - pairs with [last7Days] so the
+  /// grid can map a tapped cell back to the date it represents.
+  List<DateTime> get last7Dates {
+    final now = DateTime.now();
+    return List.generate(7, (i) {
+      final d = now.subtract(Duration(days: 6 - i));
+      return DateTime(d.year, d.month, d.day);
+    });
+  }
+
+  /// How many days a week this habit is scheduled for.
+  int get weeklyTarget => targetDays.isEmpty ? 7 : targetDays.length;
+
+  /// Days completed within the last 7 days.
+  int get completedThisWeek => last7Days.where((d) => d).length;
+
+  /// Progress toward the weekly target, 0..1.
+  double get weeklyProgress {
+    if (weeklyTarget == 0) return 0;
+    return (completedThisWeek / weeklyTarget).clamp(0.0, 1.0);
+  }
+
   /// Get the last 7 days completion status
   List<bool> get last7Days {
     return List.generate(7, (i) {
