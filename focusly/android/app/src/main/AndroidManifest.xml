@@ -12,6 +12,11 @@
          user to grant DND access; only requested when Strict Mode is enabled. -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
 
+    <!-- AdMob uses the advertising ID for ad personalisation. Without this
+         permission Android 13+ zeroes the ID, ads fall back to non-personalised
+         and Play flags a mismatch with the advertising-ID declaration. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
     <application
         android:label="Focusly - Daily Planner"
         android:name="${applicationName}"
