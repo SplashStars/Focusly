@@ -60,10 +60,10 @@ jobs:
             ${{ runner.os }}-gradle-
 
       # ── 3. Flutter ─────────────────────────────────────────────────────────
-      - name: Setup Flutter 3.22.3
+      - name: Setup Flutter 3.38.5
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.4'
+          flutter-version: '3.38.5'
           channel: 'stable'
           cache: true
 
@@ -211,7 +211,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.4'
+          flutter-version: '3.38.5'
           channel: 'stable'
           cache: true
 
