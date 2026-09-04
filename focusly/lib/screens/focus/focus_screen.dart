@@ -5,12 +5,14 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/task_provider.dart';
 import '../../models/task_model.dart';
 import '../../services/focus_service.dart';
 import '../../services/notification_service.dart';
+import '../../services/dnd_service.dart';
 
 /// The three timer modes available on this screen.
 enum FocusMode {
@@ -34,9 +36,20 @@ class FocusScreen extends StatefulWidget {
 class _FocusScreenState extends State<FocusScreen> {
   Timer? _ticker;
   FocusMode _mode = FocusMode.pomodoro;
-  late int _remaining = _mode.minutes * 60;
+
+  /// The session length actually in use. Presets set this; the wheel overrides it.
+  int _minutes = FocusMode.pomodoro.minutes;
+  late int _remaining = _minutes * 60;
   bool _running = false;
+  bool _strictMode = false;
+  bool _fullScreen = false;
   TaskModel? _linkedTask;
+
+  /// Selectable session lengths: 5 to 120 minutes in 5 minute steps.
+  static final List<int> _options = List<int>.generate(24, (i) => (i + 1) * 5);
+
+  late final FixedExtentScrollController _wheel =
+      FixedExtentScrollController(initialItem: _options.indexOf(_minutes));
 
   @override
   void initState() {
@@ -49,10 +62,14 @@ class _FocusScreenState extends State<FocusScreen> {
   @override
   void dispose() {
     _ticker?.cancel();
+    _wheel.dispose();
+    // Never leave the phone silenced or the status bar hidden behind us.
+    if (_strictMode) DndService.disable();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
-  int get _totalSeconds => _mode.minutes * 60;
+  int get _totalSeconds => _minutes * 60;
   double get _progress =>
       _totalSeconds == 0 ? 0 : (_totalSeconds - _remaining) / _totalSeconds;
 
@@ -60,8 +77,28 @@ class _FocusScreenState extends State<FocusScreen> {
     _ticker?.cancel();
     setState(() {
       _mode = mode;
-      _remaining = mode.minutes * 60;
+      _minutes = mode.minutes;
+      _remaining = _minutes * 60;
       _running = false;
+    });
+    _wheel.animateToItem(
+      _options.indexOf(_minutes),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  /// Called when the wheel settles on a new value.
+  void _selectMinutes(int minutes) {
+    if (_running) return;
+    setState(() {
+      _minutes = minutes;
+      _remaining = minutes * 60;
+      // Keep the preset chip highlighted only while it still matches.
+      _mode = FocusMode.values.firstWhere(
+        (m) => m.minutes == minutes,
+        orElse: () => _mode,
+      );
     });
   }
 
@@ -99,17 +136,26 @@ class _FocusScreenState extends State<FocusScreen> {
 
     // Only real focus sessions count toward stats — breaks do not.
     if (_mode != FocusMode.shortBreak) {
-      await context.read<FocusService>().recordSession(_mode.minutes);
+      await context.read<FocusService>().recordSession(_minutes);
     }
 
     await NotificationService.instance.showFocusComplete(
       title: _mode == FocusMode.shortBreak ? 'Break over' : 'Session complete',
       body: _mode == FocusMode.shortBreak
           ? 'Ready for another focus session?'
-          : 'Great work — ${_mode.minutes} minutes focused.',
+          : 'Great work — ${_minutes} minutes focused.',
     );
 
+    // Give the phone back to the user before celebrating.
+    if (_strictMode) {
+      await DndService.disable();
+    }
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     if (!mounted) return;
+    setState(() {
+      _strictMode = false;
+      _fullScreen = false;
+    });
     _showCompletionSheet();
   }
 
@@ -146,7 +192,7 @@ class _FocusScreenState extends State<FocusScreen> {
             Text(
               _linkedTask != null
                   ? 'Focused on "${_linkedTask!.title}"'
-                  : '${_mode.minutes} minutes of focused work.',
+                  : '${_minutes} minutes of focused work.',
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
             ),
@@ -201,6 +247,7 @@ class _FocusScreenState extends State<FocusScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_fullScreen) return _buildFullScreen();
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -219,16 +266,20 @@ class _FocusScreenState extends State<FocusScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                _mode.description,
+                _running
+                    ? 'Session in progress — stay with it'
+                    : 'Spin the wheel to set your session length',
                 style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
               ),
               const SizedBox(height: 24),
               _buildModeSelector(),
-              const SizedBox(height: 28),
-              Center(child: _buildDial()),
-              const SizedBox(height: 28),
+              const SizedBox(height: 20),
+              Center(child: _running ? _buildDial() : _buildWheel()),
+              const SizedBox(height: 20),
               _buildControls(),
-              const SizedBox(height: 28),
+              const SizedBox(height: 16),
+              _buildSessionOptions(),
+              const SizedBox(height: 24),
               _buildTaskLink(),
               const SizedBox(height: 24),
               _buildTodayStats(),
@@ -355,6 +406,285 @@ class _FocusScreenState extends State<FocusScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  // Timer wheel ---------------------------------------------------------------
+  // Shown while the timer is stopped. Scrolling it picks the session length,
+  // so the user is never limited to the three presets.
+
+  Widget _buildWheel() {
+    return SizedBox(
+      width: 240,
+      height: 240,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Static ring so the wheel reads as a dial, not a plain list.
+          SizedBox(
+            width: 240,
+            height: 240,
+            child: CircularProgressIndicator(
+              value: _minutes / 120,
+              strokeWidth: 12,
+              backgroundColor: AppColors.surfaceHighlight,
+              valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+            ),
+          ),
+          // Selection band behind the centre item.
+          Container(
+            width: 150,
+            height: 62,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.primary.withOpacity(0.35)),
+            ),
+          ),
+          SizedBox(
+            width: 170,
+            height: 200,
+            child: ListWheelScrollView.useDelegate(
+              controller: _wheel,
+              itemExtent: 62,
+              perspective: 0.004,
+              diameterRatio: 1.6,
+              physics: const FixedExtentScrollPhysics(),
+              onSelectedItemChanged: (i) => _selectMinutes(_options[i]),
+              childDelegate: ListWheelChildBuilderDelegate(
+                childCount: _options.length,
+                builder: (context, i) {
+                  final value = _options[i];
+                  final selected = value == _minutes;
+                  return Center(
+                    child: Text(
+                      '$value',
+                      style: TextStyle(
+                        fontSize: selected ? 46 : 30,
+                        fontWeight: selected ? FontWeight.w600 : FontWeight.w300,
+                        color: selected
+                            ? AppColors.textPrimary
+                            : AppColors.textMuted,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          const Positioned(
+            bottom: 46,
+            child: Text(
+              'minutes',
+              style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Strict Mode and Full Screen ----------------------------------------------
+
+  Widget _buildSessionOptions() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.surfaceHighlight),
+      ),
+      child: Column(
+        children: [
+          SwitchListTile(
+            value: _strictMode,
+            onChanged: (v) => _toggleStrict(v),
+            activeColor: AppColors.primary,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            title: const Text(
+              'Strict Mode',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: const Text(
+              'Silence calls, messages and reminders until the session ends',
+              style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+            ),
+            secondary: const Icon(
+              Icons.do_not_disturb_on_outlined,
+              color: AppColors.primaryLight,
+              size: 20,
+            ),
+          ),
+          const Divider(height: 1, color: AppColors.surfaceHighlight),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            leading: const Icon(
+              Icons.fullscreen,
+              color: AppColors.primaryLight,
+              size: 20,
+            ),
+            title: const Text(
+              'Full Screen',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: const Text(
+              'Just the countdown, nothing else on screen',
+              style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+            ),
+            trailing: const Icon(
+              Icons.chevron_right,
+              color: AppColors.textMuted,
+              size: 20,
+            ),
+            onTap: _enterFullScreen,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Strict Mode needs Do Not Disturb access. We only ever ask for it here -
+  /// at the moment the user switches the feature on - never at launch.
+  Future<void> _toggleStrict(bool value) async {
+    if (!value) {
+      await DndService.disable();
+      if (mounted) setState(() => _strictMode = false);
+      return;
+    }
+
+    final granted = await DndService.hasAccess();
+    if (!granted) {
+      if (!mounted) return;
+      final go = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: const Text(
+            'Allow Do Not Disturb?',
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 17),
+          ),
+          content: const Text(
+            'Strict Mode silences calls, messages and reminders while you '
+            'focus. Android asks you to grant Do Not Disturb access once. '
+            'Focusly restores your normal settings the moment the session '
+            'ends.',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Not now'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Open settings'),
+            ),
+          ],
+        ),
+      );
+      if (go == true) {
+        await DndService.openAccessSettings();
+      }
+      return;
+    }
+
+    final ok = await DndService.enable();
+    if (!mounted) return;
+    setState(() => _strictMode = ok);
+    if (!ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not turn on Do Not Disturb')),
+      );
+    }
+  }
+
+  void _enterFullScreen() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    setState(() => _fullScreen = true);
+  }
+
+  void _exitFullScreen() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    setState(() => _fullScreen = false);
+  }
+
+  Widget _buildFullScreen() {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _exitFullScreen,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_linkedTask != null) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    _linkedTask!.title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+              Text(
+                _timeLabel,
+                style: const TextStyle(
+                  fontSize: 96,
+                  fontWeight: FontWeight.w200,
+                  color: Colors.white,
+                  letterSpacing: 4,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (_strictMode)
+                const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.do_not_disturb_on,
+                        size: 14, color: AppColors.gold),
+                    SizedBox(width: 6),
+                    Text(
+                      'Strict Mode on',
+                      style: TextStyle(color: AppColors.gold, fontSize: 12),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 40),
+              TextButton.icon(
+                onPressed: _toggle,
+                icon: Icon(
+                  _running ? Icons.pause : Icons.play_arrow,
+                  color: Colors.white70,
+                ),
+                label: Text(
+                  _running ? 'Pause' : 'Start',
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Tap anywhere to leave full screen',
+                style: TextStyle(color: Colors.white24, fontSize: 11),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
