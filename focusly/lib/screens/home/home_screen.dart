@@ -12,6 +12,8 @@ import '../../widgets/task_card.dart';
 import '../../widgets/habit_card.dart';
 import '../tasks/add_edit_task_screen.dart';
 import '../tasks/tasks_screen.dart';
+import '../habits/add_edit_habit_screen.dart';
+import '../habits/habits_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -38,9 +40,23 @@ class HomeScreen extends StatelessWidget {
           slivers: [
             _buildHeader(context),
             _buildStatsRow(context),
-            _buildSectionHeader('Today\'s Focus 🎯', seeAllContext: context),
+            _buildSectionHeader(
+              'Today\'s Focus 🎯',
+              seeAllLabel: 'All tasks',
+              onSeeAll: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TasksScreen()),
+              ),
+            ),
             _buildTodayTasks(context),
-            _buildSectionHeader('Daily Habits 🔥'),
+            _buildSectionHeader(
+              'Daily Habits 🔥',
+              seeAllLabel: 'All habits',
+              onSeeAll: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HabitsScreen()),
+              ),
+            ),
             _buildHabits(context),
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
@@ -133,6 +149,10 @@ class HomeScreen extends StatelessWidget {
                     value: '$todayTasks',
                     label: 'Tasks Today',
                     color: AppColors.primary,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TasksScreen()),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -142,6 +162,10 @@ class HomeScreen extends StatelessWidget {
                     value: '$habitsDone/$habitsTotal',
                     label: 'Habits Done',
                     color: AppColors.gold,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HabitsScreen()),
+                    ),
                   ),
                 ),
               ],
@@ -152,7 +176,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, {BuildContext? seeAllContext}) {
+  Widget _buildSectionHeader(
+    String title, {
+    VoidCallback? onSeeAll,
+    String seeAllLabel = 'See all',
+  }) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
@@ -168,24 +196,26 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            // Tasks is no longer a bottom tab, so keep the full task manager
-            // (filters, sorting, projects) reachable from here.
-            if (seeAllContext != null)
+            // Home only previews a few items, so every section links through
+            // to the screen that manages the whole list.
+            if (onSeeAll != null)
               GestureDetector(
-                onTap: () => Navigator.push(
-                  seeAllContext,
-                  MaterialPageRoute(builder: (_) => const TasksScreen()),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('All tasks',
-                        style: TextStyle(
-                            color: AppColors.gold,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600)),
-                    Icon(Icons.chevron_right, size: 16, color: AppColors.gold),
-                  ],
+                behavior: HitTestBehavior.opaque,
+                onTap: onSeeAll,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(seeAllLabel,
+                          style: const TextStyle(
+                              color: AppColors.gold,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600)),
+                      const Icon(Icons.chevron_right,
+                          size: 16, color: AppColors.gold),
+                    ],
+                  ),
                 ),
               ),
           ],
@@ -223,7 +253,20 @@ class HomeScreen extends StatelessWidget {
 
         return SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => TaskCard(task: provider.todayTasks[index], compact: true),
+            (context, index) {
+              final task = provider.todayTasks[index];
+              return TaskCard(
+                task: task,
+                compact: true,
+                // Swiping still completes the task; tapping opens the editor.
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddEditTaskScreen(task: task),
+                  ),
+                ),
+              );
+            },
             childCount: provider.todayTasks.length,
           ),
         );
@@ -241,14 +284,30 @@ class HomeScreen extends StatelessWidget {
               title: 'No habits yet',
               subtitle: 'Build positive habits and track your streaks daily!',
               actionLabel: '+ Add Habit',
-              onAction: () {}, // Navigate to habits tab
+              onAction: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AddEditHabitScreen()),
+              ),
             ),
           );
         }
 
         return SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => HabitCard(habit: provider.habits[index]),
+            (context, index) {
+              final habit = provider.habits[index];
+              // The ring and the day dots still tick the habit; tapping the
+              // rest of the card opens the editor.
+              return HabitCard(
+                habit: habit,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddEditHabitScreen(habit: habit),
+                  ),
+                ),
+              );
+            },
             childCount: provider.habits.length > 3 ? 3 : provider.habits.length,
           ),
         );
@@ -262,52 +321,77 @@ class _StatCard extends StatelessWidget {
   final String value;
   final String label;
   final Color color;
+  final VoidCallback? onTap;
 
   const _StatCard({
     required this.icon,
     required this.value,
     required this.label,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 20),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withOpacity(0.2)),
           ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(icon, color: color, size: 20),
               ),
-              Text(
-                label,
-                style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+              const SizedBox(width: 10),
+              // Expanded caps the text to the room actually left in the card.
+              // Without it a long value or label overflows the row by a pixel
+              // or two and Flutter paints the yellow overflow stripes.
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        value,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
