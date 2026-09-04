@@ -103,7 +103,7 @@ jobs:
 
       # ── 6b. Decode keystore (playstore builds only) ────────────────────────
       - name: Decode release keystore
-        if: ${{ github.event.inputs.build_type == 'playstore' }}
+        if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'playstore' || github.event.inputs.build_type == 'release' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
@@ -124,14 +124,49 @@ jobs:
           path: focusly/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 30
 
-      # ── 7b. Build release APK (manual trigger only) ───────────────────────
-      - name: Build release APK
-        if: ${{ github.event.inputs.build_type == 'release' }}
+      # ── 7b. Build SIGNED release APK ──────────────────────────────────────
+      # Built on every push, not just on demand. A debug APK is signed with
+      # the public Android debug key and carries android:debuggable="true";
+      # on-device antivirus (AVG, Avast, McAfee) flags that combination as a
+      # suspicious app. The signed release APK is neither debuggable nor
+      # debug-signed, so it installs cleanly for real-world testing.
+      - name: Build signed release APK
+        if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'release' }}
         working-directory: focusly
-        run: flutter build apk --release --verbose
+        env:
+          KEYSTORE_FILE: /tmp/focusly-release.keystore
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: flutter build apk --release
+
+      - name: Verify release APK is signed and not debuggable
+        if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'release' }}
+        working-directory: focusly
+        run: |
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          ls -lh "$APK"
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/2* 2>/dev/null | sort | tail -1)
+          echo "Using build-tools: $BT"
+          if [ -n "$BT" ] && [ -x "$BT/apksigner" ]; then
+            echo "--- signing certificate ---"
+            "$BT/apksigner" verify --print-certs "$APK" | grep -Ei "certificate DN|SHA-256 digest" || true
+            if "$BT/apksigner" verify --print-certs "$APK" | grep -qi "CN=Android Debug"; then
+              echo "ERROR: release APK is signed with the public Android debug key"
+              exit 1
+            fi
+            echo "OK: not debug-signed"
+          fi
+          if [ -n "$BT" ] && [ -x "$BT/aapt2" ]; then
+            if "$BT/aapt2" dump badging "$APK" 2>/dev/null | grep -q "application-debuggable"; then
+              echo "ERROR: release APK is debuggable"
+              exit 1
+            fi
+            echo "OK: not debuggable"
+          fi
 
       - name: Upload release APK
-        if: ${{ github.event.inputs.build_type == 'release' }}
+        if: ${{ github.event_name == 'push' || github.event.inputs.build_type == 'release' }}
         uses: actions/upload-artifact@v4
         with:
           name: focusly-release-apk
