@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import '../models/habit_model.dart';
@@ -42,49 +43,89 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  Future<void> _toggle() async {
+  /// Tick or untick any of the last seven days. Forgetting to tap on the day
+  /// itself should not cost the user their streak, so the whole week is live.
+  Future<void> _toggleDay(DateTime date) async {
     if (_isAnimating) return;
-    _isAnimating = true;
 
-    // Play animation
+    final day = DateTime(date.year, date.month, date.day);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (day.isAfter(today)) {
+      _flash('You cannot tick a day that has not happened yet',
+          AppColors.textMuted);
+      return;
+    }
+
+    _isAnimating = true;
     await _controller.forward();
     await _controller.reverse();
-
-    if (!mounted) return;
+    if (!mounted) {
+      _isAnimating = false;
+      return;
+    }
 
     final provider = context.read<HabitProvider>();
-    final completed = await provider.toggleHabitToday(widget.habit.id);
-
+    final completed = await provider.toggleHabitOn(widget.habit.id, day);
     _isAnimating = false;
+    if (!mounted) return;
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    final isToday = day == today;
+    final when = isToday ? '' : ' on ${DateFormat('EEEE').format(day)}';
+
+    if (completed) {
+      final streak = widget.habit.streakCount;
+      final milestone = _milestoneFor(streak);
+      _flash(
+        milestone ??
+            '\u{1f525} ${widget.habit.name} done$when! Keep it up!',
+        AppColors.success,
+      );
+    } else {
+      _flash('↩️ Marked as incomplete$when', AppColors.textMuted);
+    }
+  }
+
+  /// Celebrate the streaks that actually feel like an achievement.
+  String? _milestoneFor(int streak) {
+    switch (streak) {
+      case 7:
+        return '\u{1f389} One full week of ${widget.habit.name}!';
+      case 30:
+        return '\u{1f3c6} 30 day streak — this is a real habit now.';
+      case 100:
+        return '\u{1f451} 100 days. Outstanding.';
+      default:
+        return null;
+    }
+  }
+
+  void _flash(String message, Color colour) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
         SnackBar(
-          content: Text(
-            completed
-                ? '🔥 ${widget.habit.name} done! Keep it up!'
-                : '↩️ Marked as incomplete',
-          ),
-          backgroundColor: completed ? AppColors.success : AppColors.textMuted,
+          content: Text(message),
+          backgroundColor: colour,
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           margin: const EdgeInsets.all(16),
         ),
       );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final habit = widget.habit;
     final isCompleted = habit.isCompletedToday;
-    final weekRate = habit.weeklyCompletionRate;
     final last7 = habit.last7Days;
+    final last7Dates = habit.last7Dates;
     final color = habit.color;
 
     return GestureDetector(
-      onTap: widget.onTap ?? _toggle,
+      onTap: widget.onTap ?? () => _toggleDay(DateTime.now()),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         padding: const EdgeInsets.all(16),
@@ -105,11 +146,11 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                 child: child,
               ),
               child: GestureDetector(
-                onTap: _toggle,
+                onTap: () => _toggleDay(DateTime.now()),
                 child: CircularPercentIndicator(
                   radius: 32.0,
                   lineWidth: 4.0,
-                  percent: weekRate,
+                  percent: habit.weeklyProgress,
                   center: Container(
                     width: 48,
                     height: 48,
@@ -180,31 +221,58 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                   Row(
                     children: [
                       ...List.generate(7, (i) {
-                        final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                        // Letters come from the real dates, so the row always
+                        // lines up with the days it is actually showing.
+                        const letters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                        final date = last7Dates[i];
+                        final done = last7[i];
+                        final isToday = date.year == DateTime.now().year &&
+                            date.month == DateTime.now().month &&
+                            date.day == DateTime.now().day;
+
                         return Padding(
                           padding: const EdgeInsets.only(right: 5),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: 18,
-                                height: 18,
-                                decoration: BoxDecoration(
-                                  color: last7[i] ? color : AppColors.surfaceElevated,
-                                  shape: BoxShape.circle,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => _toggleDay(date),
+                            child: Column(
+                              children: [
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: 18,
+                                  height: 18,
+                                  decoration: BoxDecoration(
+                                    color: done
+                                        ? color
+                                        : AppColors.surfaceElevated,
+                                    shape: BoxShape.circle,
+                                    border: isToday
+                                        ? Border.all(
+                                            color: AppColors.gold, width: 1.5)
+                                        : null,
+                                  ),
+                                  child: done
+                                      ? const Icon(Icons.check,
+                                          size: 10, color: Colors.white)
+                                      : null,
                                 ),
-                                child: last7[i]
-                                    ? Icon(Icons.check, size: 10, color: Colors.white)
-                                    : null,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                days[i],
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  color: last7[i] ? color : AppColors.textMuted,
+                                const SizedBox(height: 2),
+                                Text(
+                                  letters[date.weekday - 1],
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: isToday
+                                        ? FontWeight.w700
+                                        : FontWeight.w400,
+                                    color: done
+                                        ? color
+                                        : isToday
+                                            ? AppColors.gold
+                                            : AppColors.textMuted,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       }),
@@ -222,6 +290,30 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                           ),
                         ),
                       ],
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Text(
+                        '${habit.completedThisWeek} of ${habit.weeklyTarget} this week',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: LinearProgressIndicator(
+                            value: habit.weeklyProgress,
+                            minHeight: 4,
+                            backgroundColor: AppColors.surfaceElevated,
+                            valueColor: AlwaysStoppedAnimation(color),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
