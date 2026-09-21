@@ -15,7 +15,7 @@ class AdConfig {
   static const String testBanner = 'ca-app-pub-3940256099942544/6300978111';
 
   /// Real AdMob banner unit id (AdMob app: Focusly - Daily Planner).
-  static const String prodBanner = 'ca-app-pub-3026343596333452/6605493259';
+  static const String prodBanner = 'ca-app-pub-7215079923944618/9228143354';
 
   /// Uses the production unit when configured, otherwise the test unit.
   static String get bannerUnitId {
