@@ -68,7 +68,7 @@
              The app crashes on launch if this meta-data tag is missing. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3026343596333452~8029989637"/>
+            android:value="ca-app-pub-7215079923944618~3024862935"/>
     </application>
 
 </manifest>
