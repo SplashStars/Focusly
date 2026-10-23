@@ -415,7 +415,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   String _scoreMessage(int score) {
-    final window = _period.label.toLowerCase();
+    // 'Weekly'.toLowerCase() gave "this weekly"; use the plain noun instead.
+    final window = switch (_period) {
+      ReportPeriod.weekly => 'week',
+      ReportPeriod.monthly => 'month',
+      ReportPeriod.yearly => 'year',
+    };
     if (score >= 80) return 'Outstanding $window. You are in a strong rhythm.';
     if (score >= 60) {
       return 'Solid $window. A little more consistency and you are there.';
@@ -424,7 +429,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     if (score > 0) {
       return 'Slow start. Pick one task and begin — momentum follows.';
     }
-    return 'No activity logged in this $window yet. Complete a task to begin.';
+    return 'No activity logged this $window yet. Complete a task to begin.';
   }
 
   Widget _buildSummaryGrid(List<HabitModel> habits) {
