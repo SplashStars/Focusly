@@ -472,13 +472,6 @@ class _FocusScreenState extends State<FocusScreen> {
               ),
             ),
           ),
-          const Positioned(
-            bottom: 46,
-            child: Text(
-              'minutes',
-              style: TextStyle(color: AppColors.textMuted, fontSize: 12),
-            ),
-          ),
         ],
       ),
     );
