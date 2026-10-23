@@ -78,12 +78,15 @@ dismiss_dialogs
 foreground
 sleep 3
 
+# Bottom navigation has FIVE tabs since v1.1.2:
+#   0 Home   1 Focus   2 Planner   3 Habit   4 Report
+# so each tab centre sits at W*(2i+1)/10, not /12.
 shot () {  # shot <navIndex> <name>
   local i=$1 name=$2
   dismiss_dialogs
   foreground
   if [ "$i" -ge 0 ]; then
-    local x=$(( W * (2*i + 1) / 12 ))
+    local x=$(( W * (2*i + 1) / 10 ))
     echo "  tab $i -> tap ($x,$NAV_Y)  [$name]"
     adb shell input tap "$x" "$NAV_Y"
     sleep 5
@@ -98,43 +101,44 @@ dismiss_dialogs; foreground
 adb exec-out screencap -p > "$OUT/01_home.png"
 echo "  saved 01_home.png"
 
-shot 1 tasks      # tasks still outstanding
-shot 2 focus
-shot 3 planner
-shot 4 habits
+shot 1 focus
+shot 2 planner
+shot 3 habits
 
 # ── Generate REAL activity so the Weekly Report is not an empty state ───────
 # Tasks complete by swiping right (flutter_slidable), habits toggle by tapping
 # the ring. This is genuine app behaviour, not seeded fake history.
 echo "Generating real activity for the report..."
 dismiss_dialogs; foreground
-adb shell input tap $(( W * 3 / 12 )) "$NAV_Y"     # Tasks tab
+adb shell input tap $(( W * 1 / 10 )) "$NAV_Y"     # Home tab (tasks live here now)
 sleep 4
 
 # task_card uses flutter_slidable with startActionPane extentRatio 0.25 and no
 # DismissiblePane: a right swipe only REVEALS a green "Done" button occupying the
 # left quarter of the card, which then has to be tapped.
+# On Home the task list sits below the greeting and the two stat cards, so the
+# first card is around 45% down rather than 29% as on the old Tasks screen.
 for _ in 1 2; do
-  adb shell input swipe $(( W / 4 )) $(( H * 29 / 100 )) $(( W * 6 / 10 )) $(( H * 29 / 100 )) 400
+  adb shell input swipe $(( W / 4 )) $(( H * 45 / 100 )) $(( W * 6 / 10 )) $(( H * 45 / 100 )) 400
   sleep 2
-  adb shell input tap $(( W / 8 )) $(( H * 29 / 100 ))   # tap the revealed "Done"
+  adb shell input tap $(( W / 8 )) $(( H * 45 / 100 ))   # tap the revealed "Done"
   sleep 3
   dismiss_dialogs
 done
 
 # Complete the habit from the Home screen (tap its progress ring)
-adb shell input tap $(( W / 12 )) "$NAV_Y"          # Home tab
+adb shell input tap $(( W / 10 )) "$NAV_Y"          # Home tab
 sleep 4
 adb shell input tap $(( W * 16 / 100 )) $(( H * 695 / 1000 ))
 sleep 3
 dismiss_dialogs
 adb exec-out screencap -p > "$OUT/02_home_progress.png"
 
-shot 5 stats      # now populated with real completions
+shot 4 report     # now populated with real completions
 
 # Focus tab with a session actually running
 dismiss_dialogs; foreground
-adb shell input tap $(( W * 5 / 12 )) "$NAV_Y"     # Focus tab
+adb shell input tap $(( W * 3 / 10 )) "$NAV_Y"     # Focus tab
 sleep 4
 adb shell input tap $(( W / 3 )) $(( H * 66 / 100 ))  # Start button
 sleep 6
