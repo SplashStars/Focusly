@@ -1,7 +1,7 @@
 name: focusly
 description: Focusly - Your Daily Planner. Tasks, habits & projects in one beautiful app.
 publish_to: 'none'
-version: 1.1.2+10
+version: 1.1.4+14
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -23,6 +23,8 @@ dependencies:
 
   # Utilities
   intl: ^0.19.0
+  # Opens the user's mail app for the in-app "Send feedback" link.
+  url_launcher: ^6.3.1
   uuid: ^4.5.0
   shared_preferences: ^2.3.2
 
