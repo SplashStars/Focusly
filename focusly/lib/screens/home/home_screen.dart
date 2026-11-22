@@ -14,6 +14,7 @@ import '../tasks/add_edit_task_screen.dart';
 import '../tasks/tasks_screen.dart';
 import '../habits/add_edit_habit_screen.dart';
 import '../habits/habits_screen.dart';
+import '../settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -107,6 +108,24 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                // Settings — the only way into the daily reminder controls.
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.white.withOpacity(0.22)),
+                    ),
+                    child: const Icon(Icons.settings_outlined,
+                        color: AppColors.textPrimary, size: 22),
+                  ),
+                ),
+                const SizedBox(width: 10),
                 // Quick add button
                 GestureDetector(
                   onTap: () => Navigator.push(
