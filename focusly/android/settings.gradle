@@ -19,7 +19,10 @@ pluginManagement {
 
 plugins {
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
-    id "com.android.application" version "8.7.2" apply false
+    // 8.9.1+ is required by androidx.core 1.17.x, which url_launcher pulls in.
+    // Bumping AGP (rather than forcing androidx.core backwards) keeps the
+    // plugin running against the version it was compiled for.
+    id "com.android.application" version "8.9.1" apply false
     id "org.jetbrains.kotlin.android" version "1.9.23" apply false
 }
 
