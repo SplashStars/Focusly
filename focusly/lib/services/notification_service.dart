@@ -60,6 +60,16 @@ class NotificationService {
       playSound: true,
     ));
 
+    // Daily plan channel (the one standing nudge that brings people back)
+    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+      'daily_plan',
+      'Daily Planning Reminder',
+      description: 'One gentle nudge a day to plan or review your day',
+      importance: Importance.defaultImportance,
+      enableVibration: true,
+      playSound: true,
+    ));
+
     // Focus session channel (Pomodoro / Deep Work completion alerts)
     await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
       'focus_sessions',
@@ -188,6 +198,50 @@ class NotificationService {
     final notifId = (habitId.hashCode.abs() % 100000) + 200000;
     await _plugin.cancel(notifId);
   }
+
+  /// The one standing daily nudge. Fixed ID so re-scheduling replaces it
+  /// rather than stacking duplicates.
+  static const int dailyPlanId = 930001;
+
+  /// Schedule (or re-schedule) the daily planning reminder.
+  ///
+  /// Deliberately uses an INEXACT alarm: Android may shift it by a few minutes,
+  /// which is fine for a gentle nudge, and it avoids depending on the
+  /// exact-alarm permission that Play restricts to alarm and calendar apps.
+  Future<void> scheduleDailyPlan({
+    required int hour,
+    required int minute,
+    required String title,
+    required String body,
+  }) async {
+    await _plugin.zonedSchedule(
+      dailyPlanId,
+      title,
+      body,
+      _nextInstanceOfTime(hour, minute),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_plan',
+          'Daily Planning Reminder',
+          channelDescription: 'One gentle nudge a day to plan or review your day',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+          styleInformation: BigTextStyleInformation(body),
+          color: const Color(0xFF7C3AED),
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time, // repeat daily
+    );
+  }
+
+  Future<void> cancelDailyPlan() async => _plugin.cancel(dailyPlanId);
 
   /// Cancel all notifications
   Future<void> cancelAll() async {
