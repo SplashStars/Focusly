@@ -17,6 +17,15 @@
          and Play flags a mismatch with the advertising-ID declaration. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
+    <!-- Android 11+ hides other apps unless they are declared here. Without
+         this, url_launcher cannot see any mail app and "Send feedback" fails. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="mailto"/>
+        </intent>
+    </queries>
+
     <application
         android:label="Focusly - Daily Planner"
         android:name="${applicationName}"
