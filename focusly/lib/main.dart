@@ -17,6 +17,7 @@ import 'providers/task_provider.dart';
 import 'providers/habit_provider.dart';
 import 'providers/project_provider.dart';
 import 'services/notification_service.dart';
+import 'services/daily_reminder_service.dart';
 import 'services/focus_service.dart';
 import 'services/entitlement_service.dart';
 import 'services/iap_service.dart';
@@ -35,6 +36,11 @@ void main() async {
   await NotificationService.instance.init();
   await NotificationService.instance.requestPermissions();
 
+  // Queue the standing daily nudge. Re-running this every launch also repairs
+  // the schedule after a reboot or an app update, when Android drops alarms.
+  final dailyReminder = DailyReminderService();
+  await dailyReminder.load();
+
   // Resolve entitlement before the first frame so we never flash the wrong screen.
   final entitlement = EntitlementService();
   await entitlement.load();
@@ -48,12 +54,17 @@ void main() async {
     ),
   );
 
-  runApp(FocuslyApp(entitlement: entitlement));
+  runApp(FocuslyApp(entitlement: entitlement, dailyReminder: dailyReminder));
 }
 
 class FocuslyApp extends StatelessWidget {
   final EntitlementService entitlement;
-  const FocuslyApp({super.key, required this.entitlement});
+  final DailyReminderService dailyReminder;
+  const FocuslyApp({
+    super.key,
+    required this.entitlement,
+    required this.dailyReminder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +75,7 @@ class FocuslyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProjectProvider()),
         ChangeNotifierProvider(create: (_) => FocusService()),
         ChangeNotifierProvider<EntitlementService>.value(value: entitlement),
+        ChangeNotifierProvider<DailyReminderService>.value(value: dailyReminder),
         ChangeNotifierProvider(create: (_) => AdsService()),
         ChangeNotifierProvider(
           create: (_) {
