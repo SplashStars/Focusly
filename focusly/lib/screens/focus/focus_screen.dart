@@ -165,7 +165,7 @@ class _FocusScreenState extends State<FocusScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -182,7 +182,7 @@ class _FocusScreenState extends State<FocusScreen> {
             const SizedBox(height: 12),
             Text(
               _mode == FocusMode.shortBreak ? 'Break finished' : 'Session complete',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -194,7 +194,7 @@ class _FocusScreenState extends State<FocusScreen> {
                   ? 'Focused on "${_linkedTask!.title}"'
                   : '${_minutes} minutes of focused work.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 20),
             Row(
@@ -210,7 +210,7 @@ class _FocusScreenState extends State<FocusScreen> {
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.success,
-                        side: const BorderSide(color: AppColors.success),
+                        side: BorderSide(color: AppColors.success),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text('Mark task done'),
@@ -256,7 +256,7 @@ class _FocusScreenState extends State<FocusScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Focus Mode',
                 style: TextStyle(
                   fontSize: 26,
@@ -269,7 +269,7 @@ class _FocusScreenState extends State<FocusScreen> {
                 _running
                     ? 'Session in progress — stay with it'
                     : 'Spin the wheel to set your session length',
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
               ),
               const SizedBox(height: 24),
               _buildModeSelector(),
@@ -323,7 +323,7 @@ class _FocusScreenState extends State<FocusScreen> {
                   const SizedBox(height: 2),
                   Text(
                     '${m.minutes} min',
-                    style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 10),
                   ),
                 ],
               ),
@@ -358,7 +358,7 @@ class _FocusScreenState extends State<FocusScreen> {
             children: [
               Text(
                 _timeLabel,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 52,
                   fontWeight: FontWeight.w300,
                   color: AppColors.textPrimary,
@@ -368,7 +368,7 @@ class _FocusScreenState extends State<FocusScreen> {
               const SizedBox(height: 4),
               Text(
                 _running ? 'Stay with it' : 'Ready when you are',
-                style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                style: TextStyle(color: AppColors.textMuted, fontSize: 12),
               ),
             ],
           ),
@@ -400,7 +400,7 @@ class _FocusScreenState extends State<FocusScreen> {
             label: const Text('Reset'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
-              side: const BorderSide(color: AppColors.surfaceHighlight),
+              side: BorderSide(color: AppColors.surfaceHighlight),
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
           ),
@@ -428,7 +428,7 @@ class _FocusScreenState extends State<FocusScreen> {
               value: _minutes / 120,
               strokeWidth: 12,
               backgroundColor: AppColors.surfaceHighlight,
-              valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+              valueColor: AlwaysStoppedAnimation(AppColors.primary),
             ),
           ),
           // Selection band behind the centre item.
@@ -493,7 +493,7 @@ class _FocusScreenState extends State<FocusScreen> {
             onChanged: (v) => _toggleStrict(v),
             activeColor: AppColors.primary,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            title: const Text(
+            title: Text(
               'Strict Mode',
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -501,25 +501,25 @@ class _FocusScreenState extends State<FocusScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            subtitle: const Text(
+            subtitle: Text(
               'Silence calls, messages and reminders until the session ends',
               style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
-            secondary: const Icon(
+            secondary: Icon(
               Icons.do_not_disturb_on_outlined,
               color: AppColors.primaryLight,
               size: 20,
             ),
           ),
-          const Divider(height: 1, color: AppColors.surfaceHighlight),
+          Divider(height: 1, color: AppColors.surfaceHighlight),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            leading: const Icon(
+            leading: Icon(
               Icons.fullscreen,
               color: AppColors.primaryLight,
               size: 20,
             ),
-            title: const Text(
+            title: Text(
               'Full Screen',
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -527,11 +527,11 @@ class _FocusScreenState extends State<FocusScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            subtitle: const Text(
+            subtitle: Text(
               'Just the countdown, nothing else on screen',
               style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
-            trailing: const Icon(
+            trailing: Icon(
               Icons.chevron_right,
               color: AppColors.textMuted,
               size: 20,
@@ -559,11 +559,11 @@ class _FocusScreenState extends State<FocusScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.surface,
-          title: const Text(
+          title: Text(
             'Allow Do Not Disturb?',
             style: TextStyle(color: AppColors.textPrimary, fontSize: 17),
           ),
-          content: const Text(
+          content: Text(
             'Strict Mode silences calls, messages and reminders while you '
             'focus. Android asks you to grant Do Not Disturb access once. '
             'Focusly restores your normal settings the moment the session '
@@ -626,7 +626,7 @@ class _FocusScreenState extends State<FocusScreen> {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 15,
                     ),
@@ -645,7 +645,7 @@ class _FocusScreenState extends State<FocusScreen> {
               ),
               const SizedBox(height: 16),
               if (_strictMode)
-                const Row(
+                Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.do_not_disturb_on,
@@ -691,13 +691,13 @@ class _FocusScreenState extends State<FocusScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.link, color: AppColors.primaryLight, size: 20),
+          Icon(Icons.link, color: AppColors.primaryLight, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Working on',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 11),
                 ),
@@ -739,7 +739,7 @@ class _FocusScreenState extends State<FocusScreen> {
       builder: (ctx) => Container(
         constraints: const BoxConstraints(maxHeight: 420),
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -747,7 +747,7 @@ class _FocusScreenState extends State<FocusScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Link a task to this session',
               style: TextStyle(
                 fontSize: 16,
@@ -757,7 +757,7 @@ class _FocusScreenState extends State<FocusScreen> {
             ),
             const SizedBox(height: 12),
             if (tasks.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
                 child: Text(
                   'No open tasks. Add a task first and it will show up here.',
@@ -778,7 +778,7 @@ class _FocusScreenState extends State<FocusScreen> {
                         t.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 14,
                         ),
@@ -865,14 +865,14 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+          Text(label, style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
         ],
       ),
     );
