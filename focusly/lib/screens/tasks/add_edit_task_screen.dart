@@ -78,14 +78,14 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         ),
         actions: [
           if (_isSaving)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16),
               child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold)),
             )
           else
             TextButton(
               onPressed: _save,
-              child: const Text('Save', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
+              child: Text('Save', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
             ),
         ],
       ),
@@ -101,8 +101,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               TextFormField(
                 controller: _titleController,
                 autofocus: !_isEditing,
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
-                decoration: const InputDecoration(
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+                decoration: InputDecoration(
                   hintText: 'What needs to be done?',
                   prefixIcon: Icon(Icons.edit_outlined, color: AppColors.textMuted),
                 ),
@@ -116,8 +116,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               _buildSectionLabel('Description (optional)'),
               TextFormField(
                 controller: _descController,
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                decoration: const InputDecoration(
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                decoration: InputDecoration(
                   hintText: 'Add more details...',
                   prefixIcon: Icon(Icons.notes_outlined, color: AppColors.textMuted),
                 ),
@@ -173,7 +173,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,
@@ -193,7 +193,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
           builder: (context, child) => Theme(
             data: ThemeData.dark().copyWith(
-              colorScheme: const ColorScheme.dark(
+              colorScheme: ColorScheme.dark(
                 primary: AppColors.gold,
                 surface: AppColors.surface,
               ),
@@ -234,7 +234,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
             if (_dueDate != null)
               GestureDetector(
                 onTap: () => setState(() => _dueDate = null),
-                child: const Icon(Icons.close, size: 16, color: AppColors.textMuted),
+                child: Icon(Icons.close, size: 16, color: AppColors.textMuted),
               ),
           ],
         ),
@@ -252,7 +252,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
           builder: (context, child) => Theme(
             data: ThemeData.dark().copyWith(
-              colorScheme: const ColorScheme.dark(primary: AppColors.gold, surface: AppColors.surface),
+              colorScheme: ColorScheme.dark(primary: AppColors.gold, surface: AppColors.surface),
             ),
             child: child!,
           ),
@@ -266,7 +266,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               : const TimeOfDay(hour: 9, minute: 0),
           builder: (context, child) => Theme(
             data: ThemeData.dark().copyWith(
-              colorScheme: const ColorScheme.dark(primary: AppColors.gold, surface: AppColors.surface),
+              colorScheme: ColorScheme.dark(primary: AppColors.gold, surface: AppColors.surface),
             ),
             child: child!,
           ),
@@ -308,7 +308,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
             if (_reminderTime != null)
               GestureDetector(
                 onTap: () => setState(() => _reminderTime = null),
-                child: const Icon(Icons.close, size: 16, color: AppColors.textMuted),
+                child: Icon(Icons.close, size: 16, color: AppColors.textMuted),
               ),
           ],
         ),
@@ -329,14 +329,14 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           isExpanded: true,
           dropdownColor: AppColors.surfaceElevated,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          icon: const Icon(Icons.expand_more, color: AppColors.textMuted),
+          icon: Icon(Icons.expand_more, color: AppColors.textMuted),
           items: Recurrence.values.map((r) => DropdownMenuItem(
             value: r,
             child: Row(
               children: [
                 Icon(Icons.repeat, size: 18, color: _recurrence == r ? AppColors.primary : AppColors.textMuted),
                 const SizedBox(width: 10),
-                Text(r.label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14)),
+                Text(r.label, style: TextStyle(color: AppColors.textPrimary, fontSize: 14)),
               ],
             ),
           )).toList(),
@@ -361,8 +361,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               isExpanded: true,
               dropdownColor: AppColors.surfaceElevated,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              icon: const Icon(Icons.expand_more, color: AppColors.textMuted),
-              hint: const Row(
+              icon: Icon(Icons.expand_more, color: AppColors.textMuted),
+              hint: Row(
                 children: [
                   Icon(Icons.folder_outlined, size: 18, color: AppColors.textMuted),
                   SizedBox(width: 10),
@@ -370,7 +370,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                 ],
               ),
               items: [
-                const DropdownMenuItem<String?>(
+                DropdownMenuItem<String?>(
                   value: null,
                   child: Text('No project', style: TextStyle(color: AppColors.textSecondary)),
                 ),
@@ -380,7 +380,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                     children: [
                       Container(width: 12, height: 12, decoration: BoxDecoration(color: p.color, shape: BoxShape.circle)),
                       const SizedBox(width: 10),
-                      Text(p.name, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14)),
+                      Text(p.name, style: TextStyle(color: AppColors.textPrimary, fontSize: 14)),
                     ],
                   ),
                 )),
@@ -403,12 +403,12 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Row(
               children: [
-                const Icon(Icons.subdirectory_arrow_right, size: 18, color: AppColors.textMuted),
+                Icon(Icons.subdirectory_arrow_right, size: 18, color: AppColors.textMuted),
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: controller,
-                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       hintText: 'Subtask ${i + 1}',
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -416,7 +416,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, size: 16, color: AppColors.textMuted),
+                  icon: Icon(Icons.close, size: 16, color: AppColors.textMuted),
                   onPressed: () => setState(() {
                     _subtaskControllers.removeAt(i).dispose();
                   }),
@@ -427,8 +427,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         }),
         TextButton.icon(
           onPressed: () => setState(() => _subtaskControllers.add(TextEditingController())),
-          icon: const Icon(Icons.add, size: 16, color: AppColors.textSecondary),
-          label: const Text('Add subtask', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          icon: Icon(Icons.add, size: 16, color: AppColors.textSecondary),
+          label: Text('Add subtask', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
         ),
       ],
     );
