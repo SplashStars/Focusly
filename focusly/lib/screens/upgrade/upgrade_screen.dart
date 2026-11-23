@@ -46,7 +46,7 @@ class UpgradeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Your 3 months are up',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -56,7 +56,7 @@ class UpgradeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Thanks for using Focusly. Choose how you would like to carry '
                 'on — both options keep every feature and all your data.',
                 textAlign: TextAlign.center,
@@ -123,7 +123,7 @@ class UpgradeScreen extends StatelessWidget {
                       : () => context.read<EntitlementService>().acceptAds(),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textPrimary,
-                    side: const BorderSide(color: AppColors.surfaceHighlight),
+                    side: BorderSide(color: AppColors.surfaceHighlight),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text('Continue with adverts',
@@ -142,13 +142,13 @@ class UpgradeScreen extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline,
+                      Icon(Icons.error_outline,
                           color: AppColors.error, size: 18),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           iap.error!,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppColors.textSecondary, fontSize: 12),
                         ),
                       ),
@@ -161,12 +161,12 @@ class UpgradeScreen extends StatelessWidget {
               Center(
                 child: TextButton(
                   onPressed: busy ? null : () => context.read<IAPService>().restore(),
-                  child: const Text('Already paid? Restore purchase',
+                  child: Text('Already paid? Restore purchase',
                       style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Your tasks, habits and history stay on this device either way.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.textMuted, fontSize: 11),
@@ -224,7 +224,7 @@ class _OptionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -258,7 +258,7 @@ class _OptionCard extends StatelessWidget {
             children: [
               Text(
                 price,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -267,7 +267,7 @@ class _OptionCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 priceNote,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppColors.textMuted, fontSize: 12),
               ),
             ],
@@ -279,12 +279,12 @@ class _OptionCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.check, size: 15, color: AppColors.success),
+                  Icon(Icons.check, size: 15, color: AppColors.success),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       b,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppColors.textSecondary, fontSize: 13),
                     ),
                   ),
