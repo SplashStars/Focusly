@@ -38,13 +38,13 @@ class TasksScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 16, 20, 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: AppColors.headerGradient,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -68,7 +68,7 @@ class TasksScreen extends StatelessWidget {
               ),
               child: Text(
                 '${provider.tasks.length} tasks',
-                style: const TextStyle(color: AppColors.primaryLight, fontSize: 13, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.primaryLight, fontSize: 13, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -110,7 +110,7 @@ class TasksScreen extends StatelessWidget {
     return Consumer<TaskProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.gold));
+          return Center(child: CircularProgressIndicator(color: AppColors.gold));
         }
 
         if (provider.tasks.isEmpty) {
@@ -118,11 +118,11 @@ class TasksScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.task_alt, size: 60, color: AppColors.textMuted),
+                Icon(Icons.task_alt, size: 60, color: AppColors.textMuted),
                 const SizedBox(height: 16),
-                const Text('No tasks yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                Text('No tasks yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Tap the + button to add your first task.\nAll tasks are free — no subscription needed!',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                   textAlign: TextAlign.center,
