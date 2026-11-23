@@ -56,10 +56,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         leading: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
         actions: [
           _isSaving
-              ? const Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold)))
+              ? Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold)))
               : TextButton(
                   onPressed: _save,
-                  child: const Text('Save', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
+                  child: Text('Save', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
                 ),
         ],
       ),
@@ -91,7 +91,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                     const SizedBox(width: 14),
                     Text(
                       _nameController.text.isEmpty ? 'Project Preview' : _nameController.text,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                     ),
                   ],
                 ),
@@ -102,7 +102,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               TextFormField(
                 controller: _nameController,
                 autofocus: !_isEditing,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(hintText: 'e.g. Work, Personal, Health...'),
                 validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a project name' : null,
                 onChanged: (_) => setState(() {}),
@@ -174,7 +174,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   Widget _buildLabel(String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, letterSpacing: 0.5)),
+      child: Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, letterSpacing: 0.5)),
     );
   }
 
