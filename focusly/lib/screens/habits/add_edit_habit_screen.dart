@@ -68,7 +68,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
         ),
         actions: [
           _isSaving
-              ? const Padding(
+              ? Padding(
                   padding: EdgeInsets.all(16),
                   child: SizedBox(
                     width: 20, height: 20,
@@ -77,7 +77,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
                 )
               : TextButton(
                   onPressed: _save,
-                  child: const Text(
+                  child: Text(
                     'Save',
                     style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16),
                   ),
@@ -98,7 +98,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               TextFormField(
                 controller: _nameController,
                 autofocus: !_isEditing,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(hintText: 'e.g. Morning Workout, Read 20 pages...'),
                 validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a habit name' : null,
                 onChanged: (_) => setState(() {}),
@@ -108,7 +108,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               _buildLabel('Description (optional)'),
               TextFormField(
                 controller: _descController,
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
                 decoration: const InputDecoration(hintText: 'More details about this habit...'),
                 maxLines: 2,
               ),
@@ -168,12 +168,12 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               children: [
                 Text(
                   _nameController.text.isEmpty ? 'Habit Preview' : _nameController.text,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Text('\u{1F525} 0 day streak  ', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    Text('\u{1F525} 0 day streak  ', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
                     Text(scheduleLabel, style: TextStyle(fontSize: 12, color: Color(_selectedColor))),
                   ],
                 ),
@@ -204,7 +204,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
   Widget _buildLabel(String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, letterSpacing: 0.5)),
+      child: Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, letterSpacing: 0.5)),
     );
   }
 
@@ -273,7 +273,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               : const TimeOfDay(hour: 8, minute: 0),
           builder: (context, child) => Theme(
             data: ThemeData.dark().copyWith(
-              colorScheme: const ColorScheme.dark(primary: AppColors.gold, surface: AppColors.surface),
+              colorScheme: ColorScheme.dark(primary: AppColors.gold, surface: AppColors.surface),
             ),
             child: child!,
           ),
@@ -304,7 +304,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
             if (_reminderTime != null)
               GestureDetector(
                 onTap: () => setState(() => _reminderTime = null),
-                child: const Icon(Icons.close, size: 16, color: AppColors.textMuted),
+                child: Icon(Icons.close, size: 16, color: AppColors.textMuted),
               ),
           ],
         ),
