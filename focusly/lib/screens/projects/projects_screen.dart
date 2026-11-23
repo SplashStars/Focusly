@@ -38,7 +38,7 @@ class ProjectsScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 16, 20, 20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: AppColors.headerGradient,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
@@ -49,8 +49,8 @@ class ProjectsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Projects', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                  Text('${provider.projects.length} projects', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                  Text('Projects', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  Text('${provider.projects.length} projects', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
                 ],
               ),
             ),
@@ -64,7 +64,7 @@ class ProjectsScreen extends StatelessWidget {
     return Consumer<ProjectProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.gold));
+          return Center(child: CircularProgressIndicator(color: AppColors.gold));
         }
 
         if (provider.projects.isEmpty) {
@@ -72,11 +72,11 @@ class ProjectsScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.folder_outlined, size: 60, color: AppColors.textMuted),
+                Icon(Icons.folder_outlined, size: 60, color: AppColors.textMuted),
                 const SizedBox(height: 16),
-                const Text('No projects yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                Text('No projects yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Organize your tasks into projects\nlike Work, Personal, Health...',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                   textAlign: TextAlign.center,
@@ -172,7 +172,7 @@ class _ProjectCard extends StatelessWidget {
             const Spacer(),
             Text(
               project.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -183,7 +183,7 @@ class _ProjectCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${project.taskCount} ${project.taskCount == 1 ? 'task' : 'tasks'} remaining',
-              style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+              style: TextStyle(fontSize: 11, color: AppColors.textMuted),
             ),
           ],
         ),
@@ -205,7 +205,7 @@ class _ProjectCard extends StatelessWidget {
           children: [
             ListTile(
               leading: Icon(Icons.edit_outlined, color: project.color),
-              title: const Text('Edit Project', style: TextStyle(color: AppColors.textPrimary)),
+              title: Text('Edit Project', style: TextStyle(color: AppColors.textPrimary)),
               onTap: () {
                 Navigator.pop(ctx);
                 Navigator.push(
@@ -215,9 +215,9 @@ class _ProjectCard extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline, color: AppColors.error),
-              title: const Text('Delete Project', style: TextStyle(color: AppColors.error)),
-              subtitle: const Text('Tasks will be unlinked, not deleted', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+              leading: Icon(Icons.delete_outline, color: AppColors.error),
+              title: Text('Delete Project', style: TextStyle(color: AppColors.error)),
+              subtitle: Text('Tasks will be unlinked, not deleted', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
               onTap: () {
                 Navigator.pop(ctx);
                 _confirmDelete(context);
@@ -235,15 +235,15 @@ class _ProjectCard extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Project?', style: TextStyle(color: AppColors.textPrimary)),
+        title: Text('Delete Project?', style: TextStyle(color: AppColors.textPrimary)),
         content: Text(
           'Delete "${project.name}"? Tasks in this project will remain but won\'t be in any project.',
-          style: const TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
           ),
           ElevatedButton(
             onPressed: () {
