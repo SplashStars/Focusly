@@ -10,6 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Localisation: 10 languages, including right-to-left Arabic.
+  flutter_localizations:
+    sdk: flutter
+
   # State management
   provider: ^6.1.2
 
@@ -49,6 +53,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Runs gen-l10n at build time, producing lib/l10n/app_localizations.dart
+  generate: true
   assets:
     - assets/icon/
 
