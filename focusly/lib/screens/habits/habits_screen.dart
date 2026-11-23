@@ -36,7 +36,7 @@ class HabitsScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 16, 20, 20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: AppColors.headerGradient,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
@@ -49,9 +49,9 @@ class HabitsScreen extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Daily Habits 🔥', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+              Text('Daily Habits 🔥', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
               const SizedBox(height: 4),
-              Text('$done of $total completed today', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+              Text('$done of $total completed today', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
               const SizedBox(height: 14),
               // Progress bar
               ClipRRect(
@@ -59,7 +59,7 @@ class HabitsScreen extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: progress,
                   backgroundColor: AppColors.surfaceHighlight,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.gold),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.gold),
                   minHeight: 6,
                 ),
               ),
@@ -74,7 +74,7 @@ class HabitsScreen extends StatelessWidget {
     return Consumer<HabitProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.gold));
+          return Center(child: CircularProgressIndicator(color: AppColors.gold));
         }
 
         if (provider.habits.isEmpty) {
@@ -84,9 +84,9 @@ class HabitsScreen extends StatelessWidget {
               children: [
                 const Text('🔥', style: TextStyle(fontSize: 60)),
                 const SizedBox(height: 16),
-                const Text('No habits yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                Text('No habits yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Build daily habits and watch your streaks grow.\nAll habit tracking is completely FREE.',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                   textAlign: TextAlign.center,
