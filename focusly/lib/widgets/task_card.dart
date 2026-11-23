@@ -118,7 +118,7 @@ class TaskCard extends StatelessWidget {
                       ),
                     ),
                     // Swipe hint icon
-                    const Icon(
+                    Icon(
                       Icons.swipe,
                       size: 14,
                       color: AppColors.textMuted,
@@ -132,7 +132,7 @@ class TaskCard extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 18),
                     child: Text(
                       task.description!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textMuted,
                       ),
@@ -232,15 +232,15 @@ class TaskCard extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Task?', style: TextStyle(color: AppColors.textPrimary)),
+        title: Text('Delete Task?', style: TextStyle(color: AppColors.textPrimary)),
         content: Text(
           '"${task.title}" will be permanently deleted.',
-          style: const TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
           ),
           ElevatedButton(
             onPressed: () {
