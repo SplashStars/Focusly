@@ -212,7 +212,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: _loading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            ? Center(child: CircularProgressIndicator(color: AppColors.primary))
             : RefreshIndicator(
                 onRefresh: _load,
                 color: AppColors.primary,
@@ -282,7 +282,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       children: [
         Text(
           '${_period.label} Report',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -291,7 +291,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         const SizedBox(height: 4),
         Text(
           _rangeLabel,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
         ),
       ],
     );
@@ -340,7 +340,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   Widget _buildSectionTitle(String title) => Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
@@ -370,7 +370,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     value: score / 100,
                     strokeWidth: 7,
                     backgroundColor: Colors.white.withOpacity(0.15),
-                    valueColor: const AlwaysStoppedAnimation(AppColors.gold),
+                    valueColor: AlwaysStoppedAnimation(AppColors.gold),
                   ),
                 ),
                 Text(
@@ -559,7 +559,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         decoration: BoxDecoration(
                           gradient: count == 0
                               ? null
-                              : const LinearGradient(
+                              : LinearGradient(
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter,
                                   colors: [AppColors.primary, AppColors.primaryLight],
@@ -606,7 +606,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.surfaceHighlight),
         ),
-        child: const Column(
+        child: Column(
           children: [
             Icon(Icons.insights, color: AppColors.textMuted, size: 32),
             SizedBox(height: 10),
@@ -657,7 +657,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         h.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -679,7 +679,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 const SizedBox(width: 12),
                 Text(
                   '$pct%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -723,14 +723,14 @@ class _MetricCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+          Text(label, style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
         ],
       ),
     );
