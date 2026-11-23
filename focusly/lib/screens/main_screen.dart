@@ -22,6 +22,7 @@ import 'tasks/add_edit_task_screen.dart';
 import 'upgrade/upgrade_screen.dart';
 import '../services/entitlement_service.dart';
 import '../services/ads_service.dart';
+import '../services/nav_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class MainScreen extends StatefulWidget {
@@ -32,7 +33,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
 
   final List<Widget> _screens = const [
     HomeScreen(),
@@ -55,6 +55,8 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final ent = context.watch<EntitlementService>();
+    final nav = context.watch<NavService>();
+    final currentIndex = nav.index;
 
     return Scaffold(
       body: Column(
@@ -62,15 +64,16 @@ class _MainScreenState extends State<MainScreen> {
           if (ent.shouldNudge) _buildTrialNudge(ent),
           Expanded(
             child: IndexedStack(
-              index: _currentIndex,
+              index: currentIndex,
               children: _screens,
             ),
           ),
           if (ent.showAds) const _AdBanner(),
         ],
       ),
-      bottomNavigationBar: _buildBottomNav(),
-      floatingActionButton: _showFAB ? _buildFAB() : null,
+      bottomNavigationBar: _buildBottomNav(currentIndex),
+      floatingActionButton:
+          (currentIndex == 0 || currentIndex == 3) ? _buildFAB() : null,
     );
   }
 
@@ -88,22 +91,22 @@ class _MainScreenState extends State<MainScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
             children: [
-              const Icon(Icons.info_outline, size: 16, color: AppColors.primaryLight),
+              Icon(Icons.info_outline, size: 16, color: AppColors.primaryLight),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   days == 1
                       ? 'Last day of your free trial'
                       : '$days days left in your free trial',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 12,
                       fontWeight: FontWeight.w600),
                 ),
               ),
-              const Text('See options',
+              Text('See options',
                   style: TextStyle(color: AppColors.gold, fontSize: 12, fontWeight: FontWeight.w600)),
-              const Icon(Icons.chevron_right, size: 16, color: AppColors.gold),
+              Icon(Icons.chevron_right, size: 16, color: AppColors.gold),
             ],
           ),
         ),
@@ -111,18 +114,15 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  /// Only show the FAB on Home, Tasks, and Habits screens
-  bool get _showFAB => _currentIndex == 0 || _currentIndex == 3;
-
-  Widget _buildBottomNav() {
+  Widget _buildBottomNav(int currentIndex) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.surfaceHighlight, width: 1)),
       ),
       child: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        currentIndex: currentIndex,
+        onTap: (index) => context.read<NavService>().go(index),
         backgroundColor: Colors.transparent,
         elevation: 0,
         selectedItemColor: AppColors.gold,
@@ -180,7 +180,7 @@ class _MainScreenState extends State<MainScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -196,7 +196,7 @@ class _MainScreenState extends State<MainScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Text(
+            Text(
               'What do you want to add?',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
             ),
@@ -225,7 +225,7 @@ class _MainScreenState extends State<MainScreen> {
                     color: AppColors.gold,
                     onTap: () {
                       Navigator.pop(ctx);
-                      setState(() => _currentIndex = 3); // Go to Habit tab
+                      context.read<NavService>().go(3); // Go to Habit tab
                     },
                   ),
                 ),
