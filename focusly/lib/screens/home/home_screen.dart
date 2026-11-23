@@ -15,6 +15,7 @@ import '../tasks/tasks_screen.dart';
 import '../habits/add_edit_habit_screen.dart';
 import '../habits/habits_screen.dart';
 import '../settings_screen.dart';
+import '../../services/nav_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -76,7 +77,7 @@ class HomeScreen extends StatelessWidget {
           20,
           28,
         ),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: AppColors.headerGradient,
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
         ),
@@ -91,23 +92,28 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Text(
                         '${_getGreeting()} ✨',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          // The header band stays deep purple in light mode too,
+                          // so its text cannot follow textPrimary.
+                          color: AppColors.headerText,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         DateFormat('EEEE, MMMM d').format(now),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textSecondary,
+                          color: AppColors.headerTextMuted,
                         ),
                       ),
                     ],
                   ),
                 ),
+                // Same destinations as the bottom bar, reachable from the top.
+                _NavDropdown(),
+                const SizedBox(width: 10),
                 // Settings — the only way into the daily reminder controls.
                 GestureDetector(
                   onTap: () => Navigator.push(
@@ -121,8 +127,8 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: Colors.white.withOpacity(0.22)),
                     ),
-                    child: const Icon(Icons.settings_outlined,
-                        color: AppColors.textPrimary, size: 22),
+                    child: Icon(Icons.settings_outlined,
+                        color: AppColors.headerText, size: 22),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -139,7 +145,7 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: AppColors.gold.withOpacity(0.4)),
                     ),
-                    child: const Icon(Icons.add, color: AppColors.gold, size: 22),
+                    child: Icon(Icons.add, color: AppColors.gold, size: 22),
                   ),
                 ),
               ],
@@ -208,7 +214,7 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -227,11 +233,11 @@ class HomeScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(seeAllLabel,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppColors.gold,
                               fontSize: 12,
                               fontWeight: FontWeight.w600)),
-                      const Icon(Icons.chevron_right,
+                      Icon(Icons.chevron_right,
                           size: 16, color: AppColors.gold),
                     ],
                   ),
@@ -247,7 +253,7 @@ class HomeScreen extends StatelessWidget {
     return Consumer<TaskProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
-          return const SliverToBoxAdapter(
+          return SliverToBoxAdapter(
             child: Center(child: Padding(
               padding: EdgeInsets.all(20),
               child: CircularProgressIndicator(color: AppColors.gold),
@@ -400,7 +406,7 @@ class _StatCard extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         color: AppColors.textMuted,
                       ),
@@ -445,20 +451,81 @@ class _EmptyState extends StatelessWidget {
         children: [
           Icon(icon, size: 40, color: AppColors.textMuted),
           const SizedBox(height: 12),
-          Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+          Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
           const SizedBox(height: 6),
-          Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textMuted), textAlign: TextAlign.center),
+          Text(subtitle, style: TextStyle(fontSize: 12, color: AppColors.textMuted), textAlign: TextAlign.center),
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: onAction,
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.gold,
-              side: const BorderSide(color: AppColors.gold),
+              side: BorderSide(color: AppColors.gold),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: Text(actionLabel),
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+/// Mirrors the bottom navigation, plus Settings. Some users never look at the
+/// bottom bar, and Settings has no home there at all.
+class _NavDropdown extends StatelessWidget {
+  const _NavDropdown();
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      tooltip: 'Menu',
+      color: AppColors.surfaceElevated,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      offset: const Offset(0, 48),
+      onSelected: (value) {
+        if (value == 'settings') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          );
+          return;
+        }
+        context.read<NavService>().go(int.parse(value));
+      },
+      itemBuilder: (context) => [
+        for (final tab in AppTab.values)
+          PopupMenuItem<String>(
+            value: '${tab.index}',
+            child: Row(
+              children: [
+                Icon(tab.icon, size: 18, color: AppColors.primaryLight),
+                const SizedBox(width: 12),
+                Text(tab.label,
+                    style: TextStyle(color: AppColors.textPrimary)),
+              ],
+            ),
+          ),
+        PopupMenuDivider(),
+        PopupMenuItem<String>(
+          value: 'settings',
+          child: Row(
+            children: [
+              Icon(Icons.settings_outlined, size: 18, color: AppColors.gold),
+              const SizedBox(width: 12),
+              Text('Settings', style: TextStyle(color: AppColors.textPrimary)),
+            ],
+          ),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withOpacity(0.22)),
+        ),
+        child: Icon(Icons.menu_rounded, color: AppColors.headerText, size: 22),
       ),
     );
   }
