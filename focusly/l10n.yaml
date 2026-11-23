@@ -1,11 +1,7 @@
 # Generated AppLocalizations lands in lib/l10n and is imported relatively.
-# synthetic-package is set explicitly: recent Flutter removed the synthetic
-# package:flutter_gen import path, and relying on the default has bitten us
-# before when the toolchain moved.
 arb-dir: lib/l10n
 template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
 output-class: AppLocalizations
 output-dir: lib/l10n
-synthetic-package: false
 nullable-getter: false
