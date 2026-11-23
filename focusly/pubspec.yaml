@@ -26,7 +26,8 @@ dependencies:
   timezone: ^0.9.4
 
   # Utilities
-  intl: ^0.19.0
+  # Pinned by flutter_localizations on Flutter 3.38; ^0.19.0 fails to resolve.
+  intl: ^0.20.2
   # Opens the user's mail app for the in-app "Send feedback" link.
   url_launcher: ^6.3.1
   uuid: ^4.5.0
