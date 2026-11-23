@@ -297,7 +297,7 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                     children: [
                       Text(
                         '${habit.completedThisWeek} of ${habit.weeklyTarget} this week',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
                           color: AppColors.textMuted,
                         ),
