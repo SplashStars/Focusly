@@ -6,7 +6,9 @@
 //   • After that: pay $2.99 once (no adverts) OR continue free with adverts
 //
 // The app ALWAYS opens straight into MainScreen for new installs. The upgrade
-// choice only appears once the trial has actually elapsed.
+// choice only appears once the trial has actually elapsed — and from v1.1.4 it
+// is also reachable at any time from Settings, so choosing adverts is no
+// longer a one-way door.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -18,6 +20,8 @@ import 'providers/habit_provider.dart';
 import 'providers/project_provider.dart';
 import 'services/notification_service.dart';
 import 'services/daily_reminder_service.dart';
+import 'services/theme_controller.dart';
+import 'services/nav_service.dart';
 import 'services/focus_service.dart';
 import 'services/entitlement_service.dart';
 import 'services/iap_service.dart';
@@ -41,29 +45,32 @@ void main() async {
   final dailyReminder = DailyReminderService();
   await dailyReminder.load();
 
+  // Resolve the palette before the first frame, otherwise a light-theme user
+  // sees one dark frame on every launch.
+  final themeController = ThemeController();
+  await themeController.load();
+
   // Resolve entitlement before the first frame so we never flash the wrong screen.
   final entitlement = EntitlementService();
   await entitlement.load();
 
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: AppColors.surface,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ),
-  );
-
-  runApp(FocuslyApp(entitlement: entitlement, dailyReminder: dailyReminder));
+  runApp(FocuslyApp(
+    entitlement: entitlement,
+    dailyReminder: dailyReminder,
+    themeController: themeController,
+  ));
 }
 
 class FocuslyApp extends StatelessWidget {
   final EntitlementService entitlement;
   final DailyReminderService dailyReminder;
+  final ThemeController themeController;
+
   const FocuslyApp({
     super.key,
     required this.entitlement,
     required this.dailyReminder,
+    required this.themeController,
   });
 
   @override
@@ -73,9 +80,11 @@ class FocuslyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
         ChangeNotifierProvider(create: (_) => ProjectProvider()),
+        ChangeNotifierProvider(create: (_) => NavService()),
         ChangeNotifierProvider(create: (_) => FocusService()),
         ChangeNotifierProvider<EntitlementService>.value(value: entitlement),
         ChangeNotifierProvider<DailyReminderService>.value(value: dailyReminder),
+        ChangeNotifierProvider<ThemeController>.value(value: themeController),
         ChangeNotifierProvider(create: (_) => AdsService()),
         ChangeNotifierProvider(
           create: (_) {
@@ -87,11 +96,17 @@ class FocuslyApp extends StatelessWidget {
           },
         ),
       ],
-      child: MaterialApp(
-        title: 'Focusly - Daily Planner',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
-        home: const _AccessGate(),
+      child: Consumer<ThemeController>(
+        builder: (context, themes, _) {
+          return MaterialApp(
+            title: 'Focusly - Daily Planner',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themes.isDark ? ThemeMode.dark : ThemeMode.light,
+            home: const _AccessGate(),
+          );
+        },
       ),
     );
   }
