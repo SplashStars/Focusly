@@ -47,7 +47,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
               child: Consumer<TaskProvider>(
                 builder: (context, provider, _) {
                   if (provider.isLoading) {
-                    return const Center(
+                    return Center(
                       child: CircularProgressIndicator(color: AppColors.primary),
                     );
                   }
@@ -73,7 +73,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 12, 8),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: AppColors.headerGradient,
       ),
       child: Row(
@@ -82,7 +82,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Planner',
                   style: TextStyle(
                     fontSize: 24,
@@ -92,23 +92,23 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 ),
                 Text(
                   fmt,
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
                 ),
               ],
             ),
           ),
           // Navigation arrows
           IconButton(
-            icon: const Icon(Icons.chevron_left, color: AppColors.textSecondary),
+            icon: Icon(Icons.chevron_left, color: AppColors.textSecondary),
             onPressed: _navigateBack,
           ),
           IconButton(
-            icon: const Icon(Icons.today, color: AppColors.gold),
+            icon: Icon(Icons.today, color: AppColors.gold),
             onPressed: () => setState(() => _anchor = DateTime.now()),
             tooltip: 'Jump to today',
           ),
           IconButton(
-            icon: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+            icon: Icon(Icons.chevron_right, color: AppColors.textSecondary),
             onPressed: _navigateForward,
           ),
         ],
@@ -196,11 +196,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.inbox_outlined, size: 16, color: AppColors.textMuted),
+                  Icon(Icons.inbox_outlined, size: 16, color: AppColors.textMuted),
                   const SizedBox(width: 8),
                   Text(
                     'Unscheduled (${unscheduled.length})',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textMuted,
@@ -295,7 +295,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
       lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
       builder: (ctx, child) => Theme(
         data: ThemeData.dark().copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppColors.primary,
             surface: AppColors.surface,
           ),
@@ -375,7 +375,7 @@ class _GanttChartState extends State<_GanttChart> {
   }
 
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -431,7 +431,7 @@ class _GanttChartState extends State<_GanttChart> {
           // Label column header
           SizedBox(
             width: _labelWidth,
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 'TASKS',
@@ -486,7 +486,7 @@ class _GanttChartState extends State<_GanttChart> {
           height: _rowHeight,
           decoration: BoxDecoration(
             color: row.isOdd ? AppColors.surfaceElevated.withOpacity(0.4) : Colors.transparent,
-            border: const Border(bottom: BorderSide(color: AppColors.surfaceHighlight, width: 0.5)),
+            border: Border(bottom: BorderSide(color: AppColors.surfaceHighlight, width: 0.5)),
           ),
           child: Row(
             children: [
@@ -593,7 +593,7 @@ class _GanttChartState extends State<_GanttChart> {
               task.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
             ),
           )),
         ],
@@ -639,7 +639,7 @@ class _UnscheduledTaskRow extends StatelessWidget {
           Expanded(
             child: Text(
               task.title,
-              style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
             ),
           ),
           GestureDetector(
@@ -651,7 +651,7 @@ class _UnscheduledTaskRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.primary.withOpacity(0.3)),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.calendar_today, size: 12, color: AppColors.primary),
@@ -681,7 +681,7 @@ class _TaskDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -724,7 +724,7 @@ class _TaskDetailSheet extends StatelessWidget {
               Expanded(
                 child: Text(
                   task.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -736,22 +736,22 @@ class _TaskDetailSheet extends StatelessWidget {
 
           if (task.description != null && task.description!.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(task.description!, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+            Text(task.description!, style: TextStyle(fontSize: 14, color: AppColors.textSecondary)),
           ],
 
           if (task.dueDate != null) ...[
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.calendar_today, size: 14, color: AppColors.textMuted),
+                Icon(Icons.calendar_today, size: 14, color: AppColors.textMuted),
                 const SizedBox(width: 6),
                 Text(
                   'Due ${DateFormat('EEE, MMM d').format(task.dueDate!)}',
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
                 ),
                 if (task.isOverdue) ...[
                   const SizedBox(width: 8),
-                  const Text('(overdue)', style: TextStyle(fontSize: 12, color: AppColors.error)),
+                  Text('(overdue)', style: TextStyle(fontSize: 12, color: AppColors.error)),
                 ],
               ],
             ),
