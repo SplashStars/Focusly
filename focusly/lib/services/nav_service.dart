@@ -8,15 +8,18 @@
 import 'package:flutter/material.dart';
 
 /// The five destinations, in the order MainScreen stacks them.
+///
+/// No `index` field here: every Dart enum already has a built-in `index` equal
+/// to its declaration order, which is exactly the tab order, and declaring our
+/// own would collide with it.
 enum AppTab {
-  home(0, 'Home', Icons.home_rounded),
-  focus(1, 'Focus', Icons.timer_rounded),
-  planner(2, 'Planner', Icons.view_timeline_rounded),
-  habits(3, 'Habits', Icons.local_fire_department_rounded),
-  reports(4, 'Report', Icons.insights_rounded);
+  home('Home', Icons.home_rounded),
+  focus('Focus', Icons.timer_rounded),
+  planner('Planner', Icons.view_timeline_rounded),
+  habits('Habits', Icons.local_fire_department_rounded),
+  reports('Report', Icons.insights_rounded);
 
-  const AppTab(this.index, this.label, this.icon);
-  final int index;
+  const AppTab(this.label, this.icon);
   final String label;
   final IconData icon;
 }
