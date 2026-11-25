@@ -20,7 +20,7 @@
   "classic25MinuteSprint": "Classic 25 minute sprint",
   "deepWork": "Deep Work",
   "longer50MinuteDeepSession": "Longer 50 minute deep session",
-  "break": "Break",
+  "breakLabel": "Break",
   "short5MinuteRest": "Short 5 minute rest",
   "breakOver": "Break over",
   "sessionComplete": "Session complete",
