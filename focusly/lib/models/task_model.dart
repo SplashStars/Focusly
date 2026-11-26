@@ -3,18 +3,30 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
+import '../services/locale_controller.dart';
 
 /// Priority levels for tasks
 enum Priority {
-  high(1, 'High', Color(0xFFEF4444)),
-  medium(2, 'Medium', Color(0xFFF59E0B)),
-  low(3, 'Low', Color(0xFF10B981));
+  high(1, Color(0xFFEF4444)),
+  medium(2, Color(0xFFF59E0B)),
+  low(3, Color(0xFF10B981));
 
   final int value;
-  final String label;
   final Color color;
 
-  const Priority(this.value, this.label, this.color);
+  const Priority(this.value, this.color);
+
+  /// Resolved at call time: enum arguments must be compile-time constants.
+  String get label {
+    switch (this) {
+      case Priority.high:
+        return L10n.t.high;
+      case Priority.medium:
+        return L10n.t.medium;
+      case Priority.low:
+        return L10n.t.low;
+    }
+  }
 
   static Priority fromValue(int value) {
     return Priority.values.firstWhere((p) => p.value == value, orElse: () => Priority.medium);
@@ -23,16 +35,32 @@ enum Priority {
 
 /// Recurrence options for tasks
 enum Recurrence {
-  none('none', 'No repeat'),
-  daily('daily', 'Every day'),
-  weekly('weekly', 'Every week'),
-  monthly('monthly', 'Every month'),
-  afterCompletion('after_completion', 'After completion'); // Todoist users requested this!
+  none('none'),
+  daily('daily'),
+  weekly('weekly'),
+  monthly('monthly'),
+  afterCompletion('after_completion'); // Todoist users requested this!
 
+  // `value` is the stored database key and must NOT be translated.
   final String value;
-  final String label;
 
-  const Recurrence(this.value, this.label);
+  const Recurrence(this.value);
+
+  /// Resolved at call time: enum arguments must be compile-time constants.
+  String get label {
+    switch (this) {
+      case Recurrence.none:
+        return L10n.t.noRepeat;
+      case Recurrence.daily:
+        return L10n.t.everyDay;
+      case Recurrence.weekly:
+        return L10n.t.everyWeek;
+      case Recurrence.monthly:
+        return L10n.t.everyMonth;
+      case Recurrence.afterCompletion:
+        return L10n.t.afterCompletion;
+    }
+  }
 
   static Recurrence fromValue(String value) {
     return Recurrence.values.firstWhere((r) => r.value == value, orElse: () => Recurrence.none);
