@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../models/project_model.dart';
 import '../../providers/project_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../services/locale_controller.dart';
 
 class AddEditProjectScreen extends StatefulWidget {
   final ProjectModel? project;
@@ -52,14 +53,14 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        title: Text(_isEditing ? 'Edit Project' : 'New Project'),
+        title: Text(_isEditing ? L10n.t.editProject : L10n.t.newProject),
         leading: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
         actions: [
           _isSaving
               ? Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold)))
               : TextButton(
                   onPressed: _save,
-                  child: Text('Save', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
+                  child: Text(L10n.t.save, style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
                 ),
         ],
       ),
@@ -90,7 +91,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                     ),
                     const SizedBox(width: 14),
                     Text(
-                      _nameController.text.isEmpty ? 'Project Preview' : _nameController.text,
+                      _nameController.text.isEmpty ? L10n.t.projectPreview : _nameController.text,
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                     ),
                   ],
@@ -98,18 +99,18 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               ),
               const SizedBox(height: 20),
 
-              _buildLabel('Project Name *'),
+              _buildLabel(L10n.t.projectName),
               TextFormField(
                 controller: _nameController,
                 autofocus: !_isEditing,
                 style: TextStyle(color: AppColors.textPrimary),
-                decoration: const InputDecoration(hintText: 'e.g. Work, Personal, Health...'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a project name' : null,
+                decoration: InputDecoration(hintText: L10n.t.eGWorkPersonalHealth),
+                validator: (v) => (v == null || v.trim().isEmpty) ? L10n.t.pleaseEnterAProjectName : null,
                 onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 20),
 
-              _buildLabel('Color'),
+              _buildLabel(L10n.t.color),
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
@@ -134,7 +135,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               ),
               const SizedBox(height: 20),
 
-              _buildLabel('Icon'),
+              _buildLabel(L10n.t.icon),
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
