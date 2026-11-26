@@ -24,6 +24,7 @@ import '../services/entitlement_service.dart';
 import '../services/ads_service.dart';
 import '../services/nav_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../services/locale_controller.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -96,7 +97,7 @@ class _MainScreenState extends State<MainScreen> {
               Expanded(
                 child: Text(
                   days == 1
-                      ? 'Last day of your free trial'
+                      ? L10n.t.lastDayOfYourFreeTrial
                       : '$days days left in your free trial',
                   style: TextStyle(
                       color: AppColors.textPrimary,
@@ -104,7 +105,7 @@ class _MainScreenState extends State<MainScreen> {
                       fontWeight: FontWeight.w600),
                 ),
               ),
-              Text('See options',
+              Text(L10n.t.seeOptions,
                   style: TextStyle(color: AppColors.gold, fontSize: 12, fontWeight: FontWeight.w600)),
               Icon(Icons.chevron_right, size: 16, color: AppColors.gold),
             ],
@@ -132,31 +133,31 @@ class _MainScreenState extends State<MainScreen> {
         showUnselectedLabels: true,
         selectedFontSize: 10,
         unselectedFontSize: 10,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
-            label: 'Home',
+            label: L10n.t.home,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.timer_outlined),
             activeIcon: Icon(Icons.timer),
-            label: 'Focus',
+            label: L10n.t.focus,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.view_timeline_outlined),
             activeIcon: Icon(Icons.view_timeline),
-            label: 'Planner',
+            label: L10n.t.planner,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_fire_department_outlined),
             activeIcon: Icon(Icons.local_fire_department),
-            label: 'Habit',
+            label: L10n.t.habit,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart_outlined),
             activeIcon: Icon(Icons.bar_chart),
-            label: 'Report',
+            label: L10n.t.report,
           ),
         ],
       ),
@@ -197,7 +198,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             Text(
-              'What do you want to add?',
+              L10n.t.whatDoYouWantToAdd,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 20),
@@ -206,7 +207,7 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(
                   child: _AddOptionCard(
                     icon: Icons.check_circle_outline,
-                    label: 'Task',
+                    label: L10n.t.task,
                     color: AppColors.primary,
                     onTap: () {
                       Navigator.pop(ctx);
@@ -221,7 +222,7 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(
                   child: _AddOptionCard(
                     icon: Icons.local_fire_department,
-                    label: 'Habit',
+                    label: L10n.t.habit,
                     color: AppColors.gold,
                     onTap: () {
                       Navigator.pop(ctx);
@@ -233,7 +234,7 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(
                   child: _AddOptionCard(
                     icon: Icons.folder,
-                    label: 'Project',
+                    label: L10n.t.project,
                     color: AppColors.success,
                     onTap: () {
                       Navigator.pop(ctx);
