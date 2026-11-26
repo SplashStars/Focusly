@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
+import 'locale_controller.dart';
 
 /// The five destinations, in the order MainScreen stacks them.
 ///
@@ -13,15 +14,31 @@ import 'package:flutter/material.dart';
 /// to its declaration order, which is exactly the tab order, and declaring our
 /// own would collide with it.
 enum AppTab {
-  home('Home', Icons.home_rounded),
-  focus('Focus', Icons.timer_rounded),
-  planner('Planner', Icons.view_timeline_rounded),
-  habits('Habits', Icons.local_fire_department_rounded),
-  reports('Report', Icons.insights_rounded);
+  home(Icons.home_rounded),
+  focus(Icons.timer_rounded),
+  planner(Icons.view_timeline_rounded),
+  habits(Icons.local_fire_department_rounded),
+  reports(Icons.insights_rounded);
 
-  const AppTab(this.label, this.icon);
-  final String label;
+  const AppTab(this.icon);
   final IconData icon;
+
+  /// Resolved at call time, not stored: enum arguments must be compile-time
+  /// constants, and a translated label is not one.
+  String get label {
+    switch (this) {
+      case AppTab.home:
+        return L10n.t.home;
+      case AppTab.focus:
+        return L10n.t.focus;
+      case AppTab.planner:
+        return L10n.t.planner;
+      case AppTab.habits:
+        return L10n.t.habits;
+      case AppTab.reports:
+        return L10n.t.report;
+    }
+  }
 }
 
 class NavService extends ChangeNotifier {
