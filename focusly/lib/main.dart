@@ -22,6 +22,8 @@ import 'services/notification_service.dart';
 import 'services/daily_reminder_service.dart';
 import 'services/theme_controller.dart';
 import 'services/nav_service.dart';
+import 'services/locale_controller.dart';
+import 'l10n/app_localizations.dart';
 import 'services/focus_service.dart';
 import 'services/entitlement_service.dart';
 import 'services/iap_service.dart';
@@ -50,6 +52,11 @@ void main() async {
   final themeController = ThemeController();
   await themeController.load();
 
+  // Resolve the language before the first frame too, so no screen renders in
+  // the wrong language and then swaps.
+  final localeController = LocaleController();
+  await localeController.load();
+
   // Resolve entitlement before the first frame so we never flash the wrong screen.
   final entitlement = EntitlementService();
   await entitlement.load();
@@ -58,6 +65,7 @@ void main() async {
     entitlement: entitlement,
     dailyReminder: dailyReminder,
     themeController: themeController,
+    localeController: localeController,
   ));
 }
 
@@ -65,12 +73,14 @@ class FocuslyApp extends StatelessWidget {
   final EntitlementService entitlement;
   final DailyReminderService dailyReminder;
   final ThemeController themeController;
+  final LocaleController localeController;
 
   const FocuslyApp({
     super.key,
     required this.entitlement,
     required this.dailyReminder,
     required this.themeController,
+    required this.localeController,
   });
 
   @override
@@ -85,6 +95,7 @@ class FocuslyApp extends StatelessWidget {
         ChangeNotifierProvider<EntitlementService>.value(value: entitlement),
         ChangeNotifierProvider<DailyReminderService>.value(value: dailyReminder),
         ChangeNotifierProvider<ThemeController>.value(value: themeController),
+        ChangeNotifierProvider<LocaleController>.value(value: localeController),
         ChangeNotifierProvider(create: (_) => AdsService()),
         ChangeNotifierProvider(
           create: (_) {
@@ -96,14 +107,19 @@ class FocuslyApp extends StatelessWidget {
           },
         ),
       ],
-      child: Consumer<ThemeController>(
-        builder: (context, themes, _) {
+      child: Consumer2<ThemeController, LocaleController>(
+        builder: (context, themes, locales, _) {
           return MaterialApp(
             title: 'Focusly - Daily Planner',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themes.isDark ? ThemeMode.dark : ThemeMode.light,
+            // Arabic flips the whole layout; Flutter handles that from the
+            // locale, which is why this is set rather than left to the device.
+            locale: locales.locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: const _AccessGate(),
           );
         },
