@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../../theme/app_theme.dart';
 import '../../services/entitlement_service.dart';
 import '../../services/iap_service.dart';
+import '../../services/locale_controller.dart';
 
 class UpgradeScreen extends StatelessWidget {
   const UpgradeScreen({super.key});
@@ -47,7 +48,7 @@ class UpgradeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Your 3 months are up',
+                L10n.t.your3MonthsAreUp,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24,
@@ -57,8 +58,7 @@ class UpgradeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Thanks for using Focusly. Choose how you would like to carry '
-                'on — both options keep every feature and all your data.',
+                L10n.t.thanksForUsingFocuslyChooseHow,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -71,17 +71,17 @@ class UpgradeScreen extends StatelessWidget {
               // ── Option 1: pay once ──────────────────────────────────────
               _OptionCard(
                 highlighted: true,
-                badge: 'BEST VALUE',
+                badge: L10n.t.bestValue,
                 icon: Icons.workspace_premium,
                 iconColor: AppColors.gold,
-                title: 'Unlock Focusly',
+                title: L10n.t.unlockFocusly,
                 price: iap.priceLabel,
-                priceNote: 'one-time payment',
-                bullets: const [
-                  'No adverts, ever',
-                  'Every feature stays unlocked',
-                  'Pay once — not a subscription',
-                  'Restores free on a new phone',
+                priceNote: L10n.t.oneTimePayment,
+                bullets: [
+                  L10n.t.noAdvertsEver,
+                  L10n.t.everyFeatureStaysUnlocked,
+                  L10n.t.payOnceNotASubscription,
+                  L10n.t.restoresFreeOnANewPhone,
                 ],
                 action: ElevatedButton(
                   onPressed: busy ? null : () => context.read<IAPService>().buy(),
@@ -108,14 +108,14 @@ class UpgradeScreen extends StatelessWidget {
                 highlighted: false,
                 icon: Icons.campaign_outlined,
                 iconColor: AppColors.primaryLight,
-                title: 'Continue free',
-                price: 'Free',
-                priceNote: 'supported by adverts',
-                bullets: const [
-                  'Every feature stays unlocked',
-                  'A small banner advert is shown',
-                  'Nothing to pay',
-                  'You can unlock later at any time',
+                title: L10n.t.continueFree,
+                price: L10n.t.free,
+                priceNote: L10n.t.supportedByAdverts,
+                bullets: [
+                  L10n.t.everyFeatureStaysUnlocked,
+                  L10n.t.aSmallBannerAdvertIsShown,
+                  L10n.t.nothingToPay,
+                  L10n.t.youCanUnlockLaterAtAny,
                 ],
                 action: OutlinedButton(
                   onPressed: busy
@@ -126,7 +126,7 @@ class UpgradeScreen extends StatelessWidget {
                     side: BorderSide(color: AppColors.surfaceHighlight),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('Continue with adverts',
+                  child: Text(L10n.t.continueWithAdverts,
                       style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                 ),
               ),
@@ -161,13 +161,13 @@ class UpgradeScreen extends StatelessWidget {
               Center(
                 child: TextButton(
                   onPressed: busy ? null : () => context.read<IAPService>().restore(),
-                  child: Text('Already paid? Restore purchase',
+                  child: Text(L10n.t.alreadyPaidRestorePurchase,
                       style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Your tasks, habits and history stay on this device either way.',
+                L10n.t.yourTasksHabitsAndHistoryStay,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.textMuted, fontSize: 11),
               ),
