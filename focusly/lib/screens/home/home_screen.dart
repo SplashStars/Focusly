@@ -205,7 +205,9 @@ class HomeScreen extends StatelessWidget {
   Widget _buildSectionHeader(
     String title, {
     VoidCallback? onSeeAll,
-    String seeAllLabel = L10n.t.seeAll,
+    // Default resolved in the body: a default parameter value must be a
+    // compile-time constant, and a translation is not one.
+    String? seeAllLabel,
   }) {
     return SliverToBoxAdapter(
       child: Padding(
@@ -233,7 +235,7 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(seeAllLabel,
+                      Text(seeAllLabel ?? L10n.t.seeAll,
                           style: TextStyle(
                               color: AppColors.gold,
                               fontSize: 12,
