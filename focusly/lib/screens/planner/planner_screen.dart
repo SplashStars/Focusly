@@ -16,6 +16,7 @@ import 'package:intl/intl.dart';
 import '../../models/task_model.dart';
 import '../../providers/task_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../services/locale_controller.dart';
 
 // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ View mode enum ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
@@ -83,7 +84,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Planner',
+                  L10n.t.planner,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
@@ -105,7 +106,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
           IconButton(
             icon: Icon(Icons.today, color: AppColors.gold),
             onPressed: () => setState(() => _anchor = DateTime.now()),
-            tooltip: 'Jump to today',
+            tooltip: L10n.t.jumpToToday,
           ),
           IconButton(
             icon: Icon(Icons.chevron_right, color: AppColors.textSecondary),
@@ -125,9 +126,9 @@ class _PlannerScreenState extends State<PlannerScreen> {
       child: Row(
         children: _PlanView.values.map((v) {
           final labels = {
-            _PlanView.day: 'Day',
-            _PlanView.week: 'Week',
-            _PlanView.month: 'Month',
+            _PlanView.day: L10n.t.day,
+            _PlanView.week: L10n.t.week,
+            _PlanView.month: L10n.t.month,
           };
           final isSelected = _view == v;
           return Expanded(
@@ -382,7 +383,7 @@ class _GanttChartState extends State<_GanttChart> {
           Icon(Icons.event_note_outlined, size: 36, color: AppColors.textMuted),
           SizedBox(height: 8),
           Text(
-            'No tasks scheduled for this period',
+            L10n.t.noTasksScheduledForThisPeriod,
             style: TextStyle(color: AppColors.textMuted, fontSize: 13),
           ),
         ],
@@ -434,7 +435,7 @@ class _GanttChartState extends State<_GanttChart> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                'TASKS',
+                L10n.t.tasks,
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textMuted, letterSpacing: 1),
               ),
             ),
@@ -657,7 +658,7 @@ class _UnscheduledTaskRow extends StatelessWidget {
                   Icon(Icons.calendar_today, size: 12, color: AppColors.primary),
                   SizedBox(width: 4),
                   Text(
-                    'Schedule',
+                    L10n.t.schedule,
                     style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -751,7 +752,7 @@ class _TaskDetailSheet extends StatelessWidget {
                 ),
                 if (task.isOverdue) ...[
                   const SizedBox(width: 8),
-                  Text('(overdue)', style: TextStyle(fontSize: 12, color: AppColors.error)),
+                  Text(L10n.t.overdue, style: TextStyle(fontSize: 12, color: AppColors.error)),
                 ],
               ],
             ),
