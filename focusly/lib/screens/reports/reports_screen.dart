@@ -13,15 +13,25 @@ import '../../models/task_model.dart';
 import '../../models/habit_model.dart';
 import '../../database/database_helper.dart';
 import '../../services/focus_service.dart';
+import '../../services/locale_controller.dart';
 
 /// The reporting windows offered on this screen.
 enum ReportPeriod {
-  weekly('Weekly'),
-  monthly('Monthly'),
-  yearly('Yearly');
+  weekly,
+  monthly,
+  yearly;
 
-  final String label;
-  const ReportPeriod(this.label);
+  /// Resolved at call time: enum arguments must be compile-time constants.
+  String get label {
+    switch (this) {
+      case ReportPeriod.weekly:
+        return L10n.t.weekly;
+      case ReportPeriod.monthly:
+        return L10n.t.monthly;
+      case ReportPeriod.yearly:
+        return L10n.t.yearly;
+    }
+  }
 }
 
 /// One column of the completions chart.
@@ -238,7 +248,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           const SizedBox(height: 12),
                           _buildBarChart(),
                           const SizedBox(height: 24),
-                          _buildSectionTitle('Top habits'),
+                          _buildSectionTitle(L10n.t.topHabits),
                           const SizedBox(height: 12),
                           _buildHabitRanking(habits),
                         ],
@@ -254,11 +264,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
   String get _chartTitle {
     switch (_period) {
       case ReportPeriod.weekly:
-        return 'Tasks completed each day';
+        return L10n.t.tasksCompletedEachDay;
       case ReportPeriod.monthly:
-        return 'Tasks completed each week';
+        return L10n.t.tasksCompletedEachWeek;
       case ReportPeriod.yearly:
-        return 'Tasks completed each month';
+        return L10n.t.tasksCompletedEachMonth;
     }
   }
 
@@ -389,8 +399,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Productivity score',
+                Text(
+                  L10n.t.productivityScore,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -425,9 +435,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
     if (score >= 60) {
       return 'Solid $window. A little more consistency and you are there.';
     }
-    if (score >= 40) return 'Steady progress. Try closing a few more tasks.';
+    if (score >= 40) return L10n.t.steadyProgressTryClosingAFew;
     if (score > 0) {
-      return 'Slow start. Pick one task and begin — momentum follows.';
+      return L10n.t.slowStartPickOneTaskAnd;
     }
     return 'No activity logged this $window yet. Complete a task to begin.';
   }
@@ -447,7 +457,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Expanded(
               child: _MetricCard(
                 icon: Icons.check_circle_outline,
-                label: 'Tasks done',
+                label: L10n.t.tasksDone,
                 value: '$_completedInPeriod',
                 color: AppColors.success,
               ),
@@ -456,7 +466,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Expanded(
               child: _MetricCard(
                 icon: Icons.percent,
-                label: 'Completion',
+                label: L10n.t.completion,
                 value: '$_completionRate%',
                 color: AppColors.primaryLight,
               ),
@@ -469,7 +479,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Expanded(
               child: _MetricCard(
                 icon: Icons.local_fire_department_outlined,
-                label: 'Best streak',
+                label: L10n.t.bestStreak,
                 value: '$bestStreak d',
                 color: AppColors.gold,
               ),
@@ -478,7 +488,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Expanded(
               child: _MetricCard(
                 icon: Icons.hourglass_bottom,
-                label: 'Focus time',
+                label: L10n.t.focusTime,
                 value: hours > 0 ? '${hours}h ${mins}m' : '${mins}m',
                 color: AppColors.primaryLight,
               ),
@@ -491,7 +501,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Expanded(
               child: _MetricCard(
                 icon: Icons.timer_outlined,
-                label: 'Focus sessions',
+                label: L10n.t.focusSessions,
                 value: '$_focusSessionsWeek',
                 color: AppColors.gold,
               ),
@@ -500,7 +510,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Expanded(
               child: _MetricCard(
                 icon: Icons.done_all,
-                label: 'Habits today',
+                label: L10n.t.habitsToday,
                 value: '$habitsKept/${habits.length}',
                 color: AppColors.success,
               ),
@@ -611,12 +621,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Icon(Icons.insights, color: AppColors.textMuted, size: 32),
             SizedBox(height: 10),
             Text(
-              'No habits yet',
+              L10n.t.noHabitsYet2,
               style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 4),
             Text(
-              'Add a habit and your consistency ranking appears here.',
+              L10n.t.addAHabitAndYourConsistency,
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.textMuted, fontSize: 12),
             ),
