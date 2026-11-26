@@ -13,17 +13,39 @@ import '../../models/task_model.dart';
 import '../../services/focus_service.dart';
 import '../../services/notification_service.dart';
 import '../../services/dnd_service.dart';
+import '../../services/locale_controller.dart';
 
 /// The three timer modes available on this screen.
 enum FocusMode {
-  pomodoro('Pomodoro', 25, 'Classic 25 minute sprint'),
-  deepWork('Deep Work', 50, 'Longer 50 minute deep session'),
-  shortBreak('Break', 5, 'Short 5 minute rest');
+  pomodoro(25),
+  deepWork(50),
+  shortBreak(5);
 
-  final String label;
   final int minutes;
-  final String description;
-  const FocusMode(this.label, this.minutes, this.description);
+  const FocusMode(this.minutes);
+
+  /// Resolved at call time: enum arguments must be compile-time constants.
+  String get label {
+    switch (this) {
+      case FocusMode.pomodoro:
+        return L10n.t.pomodoro;
+      case FocusMode.deepWork:
+        return L10n.t.deepWork;
+      case FocusMode.shortBreak:
+        return L10n.t.breakLabel;
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case FocusMode.pomodoro:
+        return L10n.t.classic25MinuteSprint;
+      case FocusMode.deepWork:
+        return L10n.t.longer50MinuteDeepSession;
+      case FocusMode.shortBreak:
+        return L10n.t.short5MinuteRest;
+    }
+  }
 }
 
 class FocusScreen extends StatefulWidget {
@@ -140,9 +162,9 @@ class _FocusScreenState extends State<FocusScreen> {
     }
 
     await NotificationService.instance.showFocusComplete(
-      title: _mode == FocusMode.shortBreak ? 'Break over' : 'Session complete',
+      title: _mode == FocusMode.shortBreak ? L10n.t.breakOver : L10n.t.sessionComplete,
       body: _mode == FocusMode.shortBreak
-          ? 'Ready for another focus session?'
+          ? L10n.t.readyForAnotherFocusSession
           : 'Great work — ${_minutes} minutes focused.',
     );
 
@@ -181,7 +203,7 @@ class _FocusScreenState extends State<FocusScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              _mode == FocusMode.shortBreak ? 'Break finished' : 'Session complete',
+              _mode == FocusMode.shortBreak ? L10n.t.breakFinished : L10n.t.sessionComplete,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -213,7 +235,7 @@ class _FocusScreenState extends State<FocusScreen> {
                         side: BorderSide(color: AppColors.success),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text('Mark task done'),
+                      child: Text(L10n.t.markTaskDone),
                     ),
                   ),
                 if (_linkedTask != null && !_linkedTask!.isCompleted)
@@ -227,8 +249,8 @@ class _FocusScreenState extends State<FocusScreen> {
                           : FocusMode.shortBreak);
                     },
                     child: Text(_mode == FocusMode.shortBreak
-                        ? 'Start focusing'
-                        : 'Take a break'),
+                        ? L10n.t.startFocusing
+                        : L10n.t.takeABreak),
                   ),
                 ),
               ],
@@ -257,7 +279,7 @@ class _FocusScreenState extends State<FocusScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Focus Mode',
+                L10n.t.focusMode,
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
@@ -267,8 +289,8 @@ class _FocusScreenState extends State<FocusScreen> {
               const SizedBox(height: 4),
               Text(
                 _running
-                    ? 'Session in progress — stay with it'
-                    : 'Spin the wheel to set your session length',
+                    ? L10n.t.sessionInProgressStayWithIt
+                    : L10n.t.spinTheWheelToSetYour,
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
               ),
               const SizedBox(height: 24),
@@ -367,7 +389,7 @@ class _FocusScreenState extends State<FocusScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                _running ? 'Stay with it' : 'Ready when you are',
+                _running ? L10n.t.stayWithIt : L10n.t.readyWhenYouAre,
                 style: TextStyle(color: AppColors.textMuted, fontSize: 12),
               ),
             ],
@@ -385,7 +407,7 @@ class _FocusScreenState extends State<FocusScreen> {
           child: ElevatedButton.icon(
             onPressed: _toggle,
             icon: Icon(_running ? Icons.pause : Icons.play_arrow),
-            label: Text(_running ? 'Pause' : 'Start'),
+            label: Text(_running ? L10n.t.pause : L10n.t.start),
             style: ElevatedButton.styleFrom(
               backgroundColor: _running ? AppColors.surfaceElevated : AppColors.primary,
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -397,7 +419,7 @@ class _FocusScreenState extends State<FocusScreen> {
           child: OutlinedButton.icon(
             onPressed: _reset,
             icon: const Icon(Icons.refresh, size: 18),
-            label: const Text('Reset'),
+            label: Text(L10n.t.reset),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
               side: BorderSide(color: AppColors.surfaceHighlight),
@@ -494,7 +516,7 @@ class _FocusScreenState extends State<FocusScreen> {
             activeColor: AppColors.primary,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             title: Text(
-              'Strict Mode',
+              L10n.t.strictMode,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 14,
@@ -502,7 +524,7 @@ class _FocusScreenState extends State<FocusScreen> {
               ),
             ),
             subtitle: Text(
-              'Silence calls, messages and reminders until the session ends',
+              L10n.t.silenceCallsMessagesAndRemindersUntil,
               style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
             secondary: Icon(
@@ -520,7 +542,7 @@ class _FocusScreenState extends State<FocusScreen> {
               size: 20,
             ),
             title: Text(
-              'Full Screen',
+              L10n.t.fullScreen,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 14,
@@ -528,7 +550,7 @@ class _FocusScreenState extends State<FocusScreen> {
               ),
             ),
             subtitle: Text(
-              'Just the countdown, nothing else on screen',
+              L10n.t.justTheCountdownNothingElseOn,
               style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
             trailing: Icon(
@@ -560,24 +582,21 @@ class _FocusScreenState extends State<FocusScreen> {
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.surface,
           title: Text(
-            'Allow Do Not Disturb?',
+            L10n.t.allowDoNotDisturb,
             style: TextStyle(color: AppColors.textPrimary, fontSize: 17),
           ),
           content: Text(
-            'Strict Mode silences calls, messages and reminders while you '
-            'focus. Android asks you to grant Do Not Disturb access once. '
-            'Focusly restores your normal settings the moment the session '
-            'ends.',
+            L10n.t.strictModeSilencesCallsMessagesAnd,
             style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Not now'),
+              child: Text(L10n.t.notNow),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Open settings'),
+              child: Text(L10n.t.openSettings),
             ),
           ],
         ),
@@ -593,7 +612,7 @@ class _FocusScreenState extends State<FocusScreen> {
     setState(() => _strictMode = ok);
     if (!ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not turn on Do Not Disturb')),
+        SnackBar(content: Text(L10n.t.couldNotTurnOnDoNot)),
       );
     }
   }
@@ -652,7 +671,7 @@ class _FocusScreenState extends State<FocusScreen> {
                         size: 14, color: AppColors.gold),
                     SizedBox(width: 6),
                     Text(
-                      'Strict Mode on',
+                      L10n.t.strictModeOn,
                       style: TextStyle(color: AppColors.gold, fontSize: 12),
                     ),
                   ],
@@ -665,13 +684,13 @@ class _FocusScreenState extends State<FocusScreen> {
                   color: Colors.white70,
                 ),
                 label: Text(
-                  _running ? 'Pause' : 'Start',
+                  _running ? L10n.t.pause : L10n.t.start,
                   style: const TextStyle(color: Colors.white70),
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Tap anywhere to leave full screen',
+              Text(
+                L10n.t.tapAnywhereToLeaveFullScreen,
                 style: TextStyle(color: Colors.white24, fontSize: 11),
               ),
             ],
@@ -698,12 +717,12 @@ class _FocusScreenState extends State<FocusScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Working on',
+                  L10n.t.workingOn,
                   style: TextStyle(color: AppColors.textMuted, fontSize: 11),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _linkedTask?.title ?? 'No task linked',
+                  _linkedTask?.title ?? L10n.t.noTaskLinked,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -719,7 +738,7 @@ class _FocusScreenState extends State<FocusScreen> {
           ),
           TextButton(
             onPressed: _pickTask,
-            child: Text(_linkedTask == null ? 'Choose' : 'Change'),
+            child: Text(_linkedTask == null ? L10n.t.choose : L10n.t.change),
           ),
         ],
       ),
@@ -748,7 +767,7 @@ class _FocusScreenState extends State<FocusScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Link a task to this session',
+              L10n.t.linkATaskToThisSession,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -760,7 +779,7 @@ class _FocusScreenState extends State<FocusScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
                 child: Text(
-                  'No open tasks. Add a task first and it will show up here.',
+                  L10n.t.noOpenTasksAddATask,
                   style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                 ),
               )
@@ -797,7 +816,7 @@ class _FocusScreenState extends State<FocusScreen> {
                   setState(() => _linkedTask = null);
                   Navigator.pop(ctx);
                 },
-                child: const Text('Clear link'),
+                child: Text(L10n.t.clearLink),
               ),
           ],
         ),
@@ -815,7 +834,7 @@ class _FocusScreenState extends State<FocusScreen> {
             Expanded(
               child: _StatTile(
                 icon: Icons.timer_outlined,
-                label: 'Sessions today',
+                label: L10n.t.sessionsToday,
                 value: '${focus.sessionsToday}',
                 color: AppColors.primaryLight,
               ),
@@ -824,7 +843,7 @@ class _FocusScreenState extends State<FocusScreen> {
             Expanded(
               child: _StatTile(
                 icon: Icons.hourglass_bottom,
-                label: 'Focused today',
+                label: L10n.t.focusedToday,
                 value: hours > 0 ? '${hours}h ${mins}m' : '${mins}m',
                 color: AppColors.gold,
               ),
