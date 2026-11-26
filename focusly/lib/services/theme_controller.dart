@@ -11,14 +11,24 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/app_theme.dart';
+import 'locale_controller.dart';
 
 enum AppThemeMode {
-  system('Follow system'),
-  light('Light'),
-  dark('Dark');
+  system,
+  light,
+  dark;
 
-  const AppThemeMode(this.label);
-  final String label;
+  /// Resolved at call time: enum arguments must be compile-time constants.
+  String get label {
+    switch (this) {
+      case AppThemeMode.system:
+        return L10n.t.followSystem;
+      case AppThemeMode.light:
+        return L10n.t.light;
+      case AppThemeMode.dark:
+        return L10n.t.dark;
+    }
+  }
 }
 
 class ThemeController extends ChangeNotifier {
