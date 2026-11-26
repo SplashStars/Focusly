@@ -110,7 +110,7 @@ class FocuslyApp extends StatelessWidget {
       child: Consumer2<ThemeController, LocaleController>(
         builder: (context, themes, locales, _) {
           return MaterialApp(
-            title: 'Focusly - Daily Planner',
+            title: L10n.t.focuslyDailyPlanner,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
