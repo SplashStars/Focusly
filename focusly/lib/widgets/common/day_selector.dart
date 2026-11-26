@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
+import '../../services/locale_controller.dart';
 
 class DaySelector extends StatelessWidget {
   final List<int> selectedDays; // 1=Mon … 7=Sun; empty = every day
@@ -21,7 +22,7 @@ class DaySelector extends StatelessWidget {
   });
 
   static const _labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  static const _fullLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  static _fullLabels = [L10n.t.mon, L10n.t.tue, L10n.t.wed, L10n.t.thu, L10n.t.fri, L10n.t.sat, L10n.t.sun];
   // weekday numbers: 1=Mon … 7=Sun
   static const _weekdays = [1, 2, 3, 4, 5, 6, 7];
 
@@ -34,21 +35,21 @@ class DaySelector extends StatelessWidget {
         Row(
           children: [
             _PresetChip(
-              label: 'Every day',
+              label: L10n.t.everyDay,
               selected: selectedDays.isEmpty,
               color: accentColor,
               onTap: () => onChanged([]),
             ),
             const SizedBox(width: 8),
             _PresetChip(
-              label: 'Weekdays',
+              label: L10n.t.weekdays,
               selected: _isWeekdays,
               color: accentColor,
               onTap: () => onChanged([1, 2, 3, 4, 5]),
             ),
             const SizedBox(width: 8),
             _PresetChip(
-              label: 'Weekends',
+              label: L10n.t.weekends,
               selected: _isWeekends,
               color: accentColor,
               onTap: () => onChanged([6, 7]),
