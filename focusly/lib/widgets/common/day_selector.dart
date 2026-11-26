@@ -22,7 +22,10 @@ class DaySelector extends StatelessWidget {
   });
 
   static const _labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  static _fullLabels = [L10n.t.mon, L10n.t.tue, L10n.t.wed, L10n.t.thu, L10n.t.fri, L10n.t.sat, L10n.t.sun];
+  // A getter, not a field: a static field would capture the translations once
+  // at class-load and keep showing the old language after a switch.
+  static List<String> get _fullLabels =>
+      [L10n.t.mon, L10n.t.tue, L10n.t.wed, L10n.t.thu, L10n.t.fri, L10n.t.sat, L10n.t.sun];
   // weekday numbers: 1=Mon … 7=Sun
   static const _weekdays = [1, 2, 3, 4, 5, 6, 7];
 
