@@ -12,6 +12,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'notification_service.dart';
+import '../services/locale_controller.dart';
 
 class DailyReminderService extends ChangeNotifier {
   static const _kEnabled = 'daily_reminder_enabled';
@@ -88,20 +89,20 @@ class DailyReminderService extends ChangeNotifier {
   /// as nonsense to anyone who sets it for 9pm.
   _ReminderCopy _copyFor(int hour) {
     if (hour < 12) {
-      return const _ReminderCopy(
-        'Plan your day',
-        'A couple of minutes now and you will know exactly what today looks like.',
+      return _ReminderCopy(
+        L10n.t.planYourDay,
+        L10n.t.aCoupleOfMinutesNowAnd,
       );
     }
     if (hour < 17) {
-      return const _ReminderCopy(
-        'How is today going?',
-        'Check off what you have finished and see what is still open.',
+      return _ReminderCopy(
+        L10n.t.howIsTodayGoing,
+        L10n.t.checkOffWhatYouHaveFinished,
       );
     }
-    return const _ReminderCopy(
-      'Wrap up your day',
-      'Tick off today’s wins, keep your streaks alive, and set up tomorrow.',
+    return _ReminderCopy(
+      L10n.t.wrapUpYourDay,
+      L10n.t.tickOffTodaySWinsKeep,
     );
   }
 }
