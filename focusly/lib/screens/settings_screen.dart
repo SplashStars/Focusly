@@ -16,6 +16,7 @@ import '../theme/app_theme.dart';
 import '../services/daily_reminder_service.dart';
 import '../services/notification_service.dart';
 import '../services/theme_controller.dart';
+import '../services/locale_controller.dart';
 import '../services/entitlement_service.dart';
 import '../services/iap_service.dart';
 import 'upgrade/upgrade_screen.dart';
@@ -47,6 +48,9 @@ class SettingsScreen extends StatelessWidget {
           SizedBox(height: 24),
           _SectionLabel('Appearance'),
           _ThemeCard(),
+          SizedBox(height: 24),
+          _SectionLabel('Language'),
+          _LanguageCard(),
           SizedBox(height: 24),
           _SectionLabel('Reminders'),
           _DailyReminderCard(),
@@ -370,6 +374,79 @@ class _ThemeCard extends StatelessWidget {
               },
             ),
         ],
+      ),
+    );
+  }
+}
+
+// ── Language ───────────────────────────────────────────────────
+
+class _LanguageCard extends StatelessWidget {
+  const _LanguageCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final locales = context.watch<LocaleController>();
+
+    return _Card(
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        leading: Icon(Icons.translate, color: AppColors.primaryLight),
+        title: Text('Language',
+            style: TextStyle(
+                color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+        subtitle: Text(locales.currentLabel,
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+        trailing: Icon(Icons.chevron_right, color: AppColors.textMuted),
+        onTap: () => _pick(context, locales),
+      ),
+    );
+  }
+
+  Future<void> _pick(BuildContext context, LocaleController locales) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheet) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            ListTile(
+              title: Text('Use device language',
+                  style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600)),
+              trailing: locales.locale == null
+                  ? Icon(Icons.check, color: AppColors.gold)
+                  : null,
+              onTap: () {
+                context.read<LocaleController>().setLocale(null);
+                Navigator.pop(sheet);
+              },
+            ),
+            Divider(height: 1, color: AppColors.surfaceElevated),
+            for (final loc in LocaleController.supported)
+              ListTile(
+                // Each language is named in its own script, so the list stays
+                // readable even if the app is currently in a language you
+                // cannot read.
+                title: Text(
+                  LocaleController.names[loc.languageCode] ?? loc.languageCode,
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+                trailing: locales.locale?.languageCode == loc.languageCode
+                    ? Icon(Icons.check, color: AppColors.gold)
+                    : null,
+                onTap: () {
+                  context.read<LocaleController>().setLocale(loc);
+                  Navigator.pop(sheet);
+                },
+              ),
+          ],
+        ),
       ),
     );
   }
