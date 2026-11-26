@@ -9,6 +9,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import '../services/locale_controller.dart';
 
 const String kUnlockProductId = 'focusly_unlock';
 
@@ -77,7 +78,7 @@ class IAPService extends ChangeNotifier {
 
         case PurchaseStatus.error:
           _uiState = PurchaseUiState.error;
-          _error = p.error?.message ?? 'Purchase failed. Please try again.';
+          _error = p.error?.message ?? L10n.t.purchaseFailedPleaseTryAgain;
           notifyListeners();
           break;
 
@@ -97,7 +98,7 @@ class IAPService extends ChangeNotifier {
   Future<void> buy() async {
     if (!_available || _product == null) {
       _uiState = PurchaseUiState.error;
-      _error = 'The store is unavailable right now. Please try again later.';
+      _error = L10n.t.theStoreIsUnavailableRightNow;
       notifyListeners();
       return;
     }
