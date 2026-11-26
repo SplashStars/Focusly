@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import '../services/locale_controller.dart';
 
 class NotificationService {
   static NotificationService? _instance;
@@ -41,40 +42,40 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
     // Task reminders channel
-    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+    await androidPlugin?.createNotificationChannel(AndroidNotificationChannel(
       'task_reminders',
-      'Task Reminders',
-      description: 'Reminders for your tasks',
+      L10n.t.taskReminders,
+      description: L10n.t.remindersForYourTasks,
       importance: Importance.high,
       enableVibration: true,
       playSound: true,
     ));
 
     // Habit reminders channel
-    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+    await androidPlugin?.createNotificationChannel(AndroidNotificationChannel(
       'habit_reminders',
-      'Habit Reminders',
-      description: 'Daily reminders for your habits',
+      L10n.t.habitReminders,
+      description: L10n.t.dailyRemindersForYourHabits,
       importance: Importance.high,
       enableVibration: true,
       playSound: true,
     ));
 
     // Daily plan channel (the one standing nudge that brings people back)
-    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+    await androidPlugin?.createNotificationChannel(AndroidNotificationChannel(
       'daily_plan',
-      'Daily Planning Reminder',
-      description: 'One gentle nudge a day to plan or review your day',
+      L10n.t.dailyPlanningReminder,
+      description: L10n.t.oneGentleNudgeADayTo,
       importance: Importance.defaultImportance,
       enableVibration: true,
       playSound: true,
     ));
 
     // Focus session channel (Pomodoro / Deep Work completion alerts)
-    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+    await androidPlugin?.createNotificationChannel(AndroidNotificationChannel(
       'focus_sessions',
-      'Focus Sessions',
-      description: 'Alerts when a focus session or break finishes',
+      L10n.t.focusSessions2,
+      description: L10n.t.alertsWhenAFocusSessionOr,
       importance: Importance.high,
       enableVibration: true,
       playSound: true,
@@ -90,11 +91,11 @@ class NotificationService {
       920001,
       title,
       body,
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'focus_sessions',
-          'Focus Sessions',
-          channelDescription: 'Alerts when a focus session or break finishes',
+          L10n.t.focusSessions2,
+          channelDescription: L10n.t.alertsWhenAFocusSessionOr,
           importance: Importance.high,
           priority: Priority.high,
         ),
@@ -129,14 +130,14 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       notifId,
-      '⏰ Task Reminder',
+      L10n.t.taskReminder,
       taskTitle,
       tz.TZDateTime.from(reminderTime, tz.local),
       NotificationDetails(
         android: AndroidNotificationDetails(
           'task_reminders',
-          'Task Reminders',
-          channelDescription: 'Reminders for your tasks',
+          L10n.t.taskReminders,
+          channelDescription: L10n.t.remindersForYourTasks,
           importance: Importance.high,
           priority: Priority.high,
           styleInformation: BigTextStyleInformation(description ?? taskTitle),
@@ -164,14 +165,14 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       notifId,
-      '🔥 Habit Check-in',
+      L10n.t.habitCheckIn,
       "Don't break your streak! Time for: $habitName",
       _nextInstanceOfTime(reminderTime.hour, reminderTime.minute),
       NotificationDetails(
         android: AndroidNotificationDetails(
           'habit_reminders',
-          'Habit Reminders',
-          channelDescription: 'Daily reminders for your habits',
+          L10n.t.habitReminders,
+          channelDescription: L10n.t.dailyRemindersForYourHabits,
           importance: Importance.high,
           priority: Priority.high,
           color: const Color(0xFFF59E0B), // Gold
@@ -222,8 +223,8 @@ class NotificationService {
       NotificationDetails(
         android: AndroidNotificationDetails(
           'daily_plan',
-          'Daily Planning Reminder',
-          channelDescription: 'One gentle nudge a day to plan or review your day',
+          L10n.t.dailyPlanningReminder,
+          channelDescription: L10n.t.oneGentleNudgeADayTo,
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
           styleInformation: BigTextStyleInformation(body),
