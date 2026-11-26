@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../models/habit_model.dart';
 import '../providers/habit_provider.dart';
 import '../theme/app_theme.dart';
+import '../services/locale_controller.dart';
 
 class HabitCard extends StatefulWidget {
   final HabitModel habit;
@@ -53,7 +54,7 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
     final today = DateTime(now.year, now.month, now.day);
 
     if (day.isAfter(today)) {
-      _flash('You cannot tick a day that has not happened yet',
+      _flash(L10n.t.youCannotTickADayThat,
           AppColors.textMuted);
       return;
     }
@@ -209,7 +210,7 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                             children: [
                               Icon(Icons.check, size: 12, color: color),
                               const SizedBox(width: 3),
-                              Text('Done', style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
+                              Text(L10n.t.done, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
                             ],
                           ),
                         ),
