@@ -35,30 +35,30 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        title: Text('Settings',
+        title: Text(L10n.t.settings,
             style: TextStyle(
                 color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
         iconTheme: IconThemeData(color: AppColors.textPrimary),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        children: const [
-          _SectionLabel('Your plan'),
+        children: [
+          _SectionLabel(L10n.t.yourPlan),
           _PlanCard(),
           SizedBox(height: 24),
-          _SectionLabel('Appearance'),
+          _SectionLabel(L10n.t.appearance),
           _ThemeCard(),
           SizedBox(height: 24),
           _SectionLabel('Language'),
           _LanguageCard(),
           SizedBox(height: 24),
-          _SectionLabel('Reminders'),
+          _SectionLabel(L10n.t.reminders),
           _DailyReminderCard(),
           SizedBox(height: 24),
-          _SectionLabel('Help us improve'),
+          _SectionLabel(L10n.t.helpUsImprove),
           _FeedbackCard(),
           SizedBox(height: 24),
-          _SectionLabel('About'),
+          _SectionLabel(L10n.t.about),
           _AboutCard(),
         ],
       ),
@@ -124,11 +124,11 @@ class _DailyReminderCard extends StatelessWidget {
                   states.contains(WidgetState.selected) ? AppColors.gold : null,
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            title: Text('Daily reminder',
+            title: Text(L10n.t.dailyReminder2,
                 style: TextStyle(
                     color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
             subtitle: Text(
-              'One nudge a day to plan or review',
+              L10n.t.oneNudgeADayToPlan,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
             secondary: Icon(Icons.notifications_active_outlined,
@@ -143,7 +143,7 @@ class _DailyReminderCard extends StatelessWidget {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               leading: Icon(Icons.schedule, color: AppColors.primaryLight),
-              title: Text('Reminder time',
+              title: Text(L10n.t.reminderTime,
                   style: TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600)),
@@ -174,8 +174,7 @@ class _DailyReminderCard extends StatelessWidget {
           SnackBar(
             backgroundColor: AppColors.surfaceElevated,
             content: Text(
-              'Notifications are turned off for Focusly. Enable them in your '
-              'phone settings to get the daily reminder.',
+              L10n.t.notificationsAreTurnedOffForFocusly,
               style: TextStyle(color: AppColors.textPrimary),
             ),
           ),
@@ -218,11 +217,11 @@ class _FeedbackCard extends StatelessWidget {
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             leading: Icon(Icons.mail_outline, color: AppColors.gold),
-            title: Text('Send feedback',
+            title: Text(L10n.t.sendFeedback,
                 style: TextStyle(
                     color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
             subtitle: Text(
-              'Report a bug or ask for a feature',
+              L10n.t.reportABugOrAskFor,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textMuted),
@@ -284,10 +283,10 @@ class _PlanCard extends StatelessWidget {
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           leading: Icon(Icons.verified, color: AppColors.gold),
-          title: Text('Focusly unlocked',
+          title: Text(L10n.t.focuslyUnlocked,
               style: TextStyle(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-          subtitle: Text('Thank you — no adverts, everything included.',
+          subtitle: Text(L10n.t.thankYouNoAdvertsEverythingIncluded,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
         ),
       );
@@ -295,7 +294,7 @@ class _PlanCard extends StatelessWidget {
 
     final subtitle = ent.isTrialActive
         ? '${ent.daysRemaining} days left in your free trial'
-        : 'Currently free, supported by adverts';
+        : L10n.t.currentlyFreeSupportedByAdverts;
 
     return _Card(
       child: Column(
@@ -318,10 +317,10 @@ class _PlanCard extends StatelessWidget {
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             leading: Icon(Icons.restore, color: AppColors.primaryLight),
-            title: Text('Restore purchase',
+            title: Text(L10n.t.restorePurchase,
                 style: TextStyle(
                     color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-            subtitle: Text('Already paid on another device?',
+            subtitle: Text(L10n.t.alreadyPaidOnAnotherDevice,
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
             onTap: () async {
               await context.read<IAPService>().restore();
@@ -330,7 +329,7 @@ class _PlanCard extends StatelessWidget {
                   SnackBar(
                     backgroundColor: AppColors.surfaceElevated,
                     content: Text(
-                      'Checking Google Play for a previous purchase\u2026',
+                      L10n.t.checkingGooglePlayForAPrevious,
                       style: TextStyle(color: AppColors.textPrimary),
                     ),
                   ),
@@ -463,7 +462,7 @@ class _AboutCard extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         leading: Icon(Icons.info_outline, color: AppColors.primaryLight),
-        title: Text('Focusly',
+        title: Text(L10n.t.focusly,
             style: TextStyle(
                 color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
         subtitle: Text('Version $kAppVersionLabel',
