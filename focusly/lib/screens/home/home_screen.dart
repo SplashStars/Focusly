@@ -16,15 +16,16 @@ import '../habits/add_edit_habit_screen.dart';
 import '../habits/habits_screen.dart';
 import '../settings_screen.dart';
 import '../../services/nav_service.dart';
+import '../../services/locale_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) return L10n.t.goodMorning;
+    if (hour < 17) return L10n.t.goodAfternoon;
+    return L10n.t.goodEvening;
   }
 
   @override
@@ -43,8 +44,8 @@ class HomeScreen extends StatelessWidget {
             _buildHeader(context),
             _buildStatsRow(context),
             _buildSectionHeader(
-              'Today\'s Focus 🎯',
-              seeAllLabel: 'All tasks',
+              L10n.t.todaySFocus,
+              seeAllLabel: L10n.t.allTasks,
               onSeeAll: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const TasksScreen()),
@@ -52,8 +53,8 @@ class HomeScreen extends StatelessWidget {
             ),
             _buildTodayTasks(context),
             _buildSectionHeader(
-              'Daily Habits 🔥',
-              seeAllLabel: 'All habits',
+              L10n.t.dailyHabits,
+              seeAllLabel: L10n.t.allHabits,
               onSeeAll: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const HabitsScreen()),
@@ -172,7 +173,7 @@ class HomeScreen extends StatelessWidget {
                   child: _StatCard(
                     icon: Icons.check_circle_outline,
                     value: '$todayTasks',
-                    label: 'Tasks Today',
+                    label: L10n.t.tasksToday,
                     color: AppColors.primary,
                     onTap: () => Navigator.push(
                       context,
@@ -185,7 +186,7 @@ class HomeScreen extends StatelessWidget {
                   child: _StatCard(
                     icon: Icons.local_fire_department,
                     value: '$habitsDone/$habitsTotal',
-                    label: 'Habits Done',
+                    label: L10n.t.habitsDone,
                     color: AppColors.gold,
                     onTap: () => Navigator.push(
                       context,
@@ -204,7 +205,7 @@ class HomeScreen extends StatelessWidget {
   Widget _buildSectionHeader(
     String title, {
     VoidCallback? onSeeAll,
-    String seeAllLabel = 'See all',
+    String seeAllLabel = L10n.t.seeAll,
   }) {
     return SliverToBoxAdapter(
       child: Padding(
@@ -265,9 +266,9 @@ class HomeScreen extends StatelessWidget {
           return SliverToBoxAdapter(
             child: _EmptyState(
               icon: Icons.celebration_outlined,
-              title: 'All done for today! 🎉',
-              subtitle: 'No tasks due today. Add one or enjoy your free time!',
-              actionLabel: '+ Add Task',
+              title: L10n.t.allDoneForToday,
+              subtitle: L10n.t.noTasksDueTodayAddOne,
+              actionLabel: L10n.t.addTask,
               onAction: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AddEditTaskScreen()),
@@ -306,9 +307,9 @@ class HomeScreen extends StatelessWidget {
           return SliverToBoxAdapter(
             child: _EmptyState(
               icon: Icons.local_fire_department_outlined,
-              title: 'No habits yet',
-              subtitle: 'Build positive habits and track your streaks daily!',
-              actionLabel: '+ Add Habit',
+              title: L10n.t.noHabitsYet2,
+              subtitle: L10n.t.buildPositiveHabitsAndTrackYour,
+              actionLabel: L10n.t.addHabit,
               onAction: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AddEditHabitScreen()),
@@ -479,7 +480,7 @@ class _NavDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      tooltip: 'Menu',
+      tooltip: L10n.t.menu,
       color: AppColors.surfaceElevated,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       offset: const Offset(0, 48),
@@ -513,7 +514,7 @@ class _NavDropdown extends StatelessWidget {
             children: [
               Icon(Icons.settings_outlined, size: 18, color: AppColors.gold),
               const SizedBox(width: 12),
-              Text('Settings', style: TextStyle(color: AppColors.textPrimary)),
+              Text(L10n.t.settings, style: TextStyle(color: AppColors.textPrimary)),
             ],
           ),
         ),
