@@ -13,6 +13,7 @@ import '../models/project_model.dart';
 import '../providers/task_provider.dart';
 import '../providers/project_provider.dart';
 import '../theme/app_theme.dart';
+import '../services/locale_controller.dart';
 
 class TaskCard extends StatelessWidget {
   final TaskModel task;
@@ -45,7 +46,7 @@ class TaskCard extends StatelessWidget {
             backgroundColor: AppColors.success,
             foregroundColor: Colors.white,
             icon: Icons.check_circle_outline,
-            label: 'Done',
+            label: L10n.t.done,
             borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
           ),
         ],
@@ -62,7 +63,7 @@ class TaskCard extends StatelessWidget {
             backgroundColor: AppColors.error,
             foregroundColor: Colors.white,
             icon: Icons.delete_outline,
-            label: 'Delete',
+            label: L10n.t.delete,
             borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
           ),
         ],
@@ -218,9 +219,9 @@ class TaskCard extends StatelessWidget {
     final taskDate = DateTime(date.year, date.month, date.day);
     final diff = taskDate.difference(today).inDays;
 
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Tomorrow';
-    if (diff == -1) return 'Yesterday';
+    if (diff == 0) return L10n.t.today;
+    if (diff == 1) return L10n.t.tomorrow;
+    if (diff == -1) return L10n.t.yesterday;
     if (diff < 0) return '${diff.abs()}d overdue';
     if (diff < 7) return DateFormat('EEE').format(date);
     return DateFormat('MMM d').format(date);
@@ -232,7 +233,7 @@ class TaskCard extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Delete Task?', style: TextStyle(color: AppColors.textPrimary)),
+        title: Text(L10n.t.deleteTask, style: TextStyle(color: AppColors.textPrimary)),
         content: Text(
           '"${task.title}" will be permanently deleted.',
           style: TextStyle(color: AppColors.textSecondary),
@@ -240,7 +241,7 @@ class TaskCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+            child: Text(L10n.t.cancel, style: TextStyle(color: AppColors.textMuted)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -248,7 +249,7 @@ class TaskCard extends StatelessWidget {
               Navigator.pop(ctx);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Delete'),
+            child: Text(L10n.t.delete),
           ),
         ],
       ),
