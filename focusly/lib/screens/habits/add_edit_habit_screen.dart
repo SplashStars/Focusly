@@ -11,6 +11,7 @@ import '../../models/habit_model.dart';
 import '../../providers/habit_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/day_selector.dart';
+import '../../services/locale_controller.dart';
 
 class AddEditHabitScreen extends StatefulWidget {
   final HabitModel? habit;
@@ -61,7 +62,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        title: Text(_isEditing ? 'Edit Habit' : 'New Habit'),
+        title: Text(_isEditing ? L10n.t.editHabit : L10n.t.newHabit),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
@@ -78,7 +79,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               : TextButton(
                   onPressed: _save,
                   child: Text(
-                    'Save',
+                    L10n.t.save,
                     style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                 ),
@@ -94,40 +95,40 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               _buildPreview(),
               const SizedBox(height: 20),
 
-              _buildLabel('Habit Name *'),
+              _buildLabel(L10n.t.habitName),
               TextFormField(
                 controller: _nameController,
                 autofocus: !_isEditing,
                 style: TextStyle(color: AppColors.textPrimary),
-                decoration: const InputDecoration(hintText: 'e.g. Morning Workout, Read 20 pages...'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a habit name' : null,
+                decoration: InputDecoration(hintText: L10n.t.eGMorningWorkoutRead20),
+                validator: (v) => (v == null || v.trim().isEmpty) ? L10n.t.pleaseEnterAHabitName : null,
                 onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 16),
 
-              _buildLabel('Description (optional)'),
+              _buildLabel(L10n.t.descriptionOptional),
               TextFormField(
                 controller: _descController,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                decoration: const InputDecoration(hintText: 'More details about this habit...'),
+                decoration: InputDecoration(hintText: L10n.t.moreDetailsAboutThisHabit),
                 maxLines: 2,
               ),
               const SizedBox(height: 20),
 
-              _buildLabel('Color'),
+              _buildLabel(L10n.t.color),
               _buildColorPicker(),
               const SizedBox(height: 20),
 
-              _buildLabel('Icon'),
+              _buildLabel(L10n.t.icon),
               _buildIconPicker(),
               const SizedBox(height: 24),
 
               // ── NEW: Days of the week selector ──────────────────────────
-              _buildLabel('Active Days'),
+              _buildLabel(L10n.t.activeDays),
               _buildScheduleSection(),
               const SizedBox(height: 24),
 
-              _buildLabel('Daily Reminder \u{1F514}'),
+              _buildLabel(L10n.t.dailyReminder),
               _buildReminderPicker(),
               const SizedBox(height: 80),
             ],
@@ -140,8 +141,8 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
   Widget _buildPreview() {
     final sorted = List<int>.from(_targetDays)..sort();
     final scheduleLabel = _targetDays.isEmpty
-        ? 'Every day'
-        : sorted.map((d) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d - 1]).join(' · ');
+        ? L10n.t.everyDay
+        : sorted.map((d) => [L10n.t.mon, L10n.t.tue, L10n.t.wed, L10n.t.thu, L10n.t.fri, L10n.t.sat, L10n.t.sun][d - 1]).join(' · ');
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -167,7 +168,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _nameController.text.isEmpty ? 'Habit Preview' : _nameController.text,
+                  _nameController.text.isEmpty ? L10n.t.habitPreview : _nameController.text,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 4),
@@ -297,7 +298,7 @@ class _AddEditHabitScreenState extends State<AddEditHabitScreen> {
               child: Text(
                 _reminderTime != null
                     ? 'Reminder at ${DateFormat('h:mm a').format(_reminderTime!)}'
-                    : 'No reminder',
+                    : L10n.t.noReminder,
                 style: TextStyle(color: _reminderTime != null ? AppColors.textPrimary : AppColors.textMuted, fontSize: 14),
               ),
             ),
