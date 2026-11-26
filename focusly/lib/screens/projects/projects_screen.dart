@@ -183,7 +183,7 @@ class _ProjectCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${project.taskCount} ${project.taskCount == 1 ? 'task' : 'tasksL10n.t.remaining,
+              '${project.taskCount} ${project.taskCount == 1 ? 'task' : 'tasks'} remaining',
               style: TextStyle(fontSize: 11, color: AppColors.textMuted),
             ),
           ],
