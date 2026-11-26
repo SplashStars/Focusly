@@ -10,6 +10,7 @@ import '../../providers/task_provider.dart';
 import '../../models/project_model.dart';
 import '../../screens/tasks/tasks_screen.dart';
 import 'add_edit_project_screen.dart';
+import '../../services/locale_controller.dart';
 
 class ProjectsScreen extends StatelessWidget {
   const ProjectsScreen({super.key});
@@ -49,7 +50,7 @@ class ProjectsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Projects', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  Text(L10n.t.projects, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                   Text('${provider.projects.length} projects', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
                 ],
               ),
@@ -74,17 +75,17 @@ class ProjectsScreen extends StatelessWidget {
               children: [
                 Icon(Icons.folder_outlined, size: 60, color: AppColors.textMuted),
                 const SizedBox(height: 16),
-                Text('No projects yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                Text(L10n.t.noProjectsYet, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
                 Text(
-                  'Organize your tasks into projects\nlike Work, Personal, Health...',
+                  L10n.t.organizeYourTasksIntoProjectsLike,
                   style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add),
-                  label: const Text('Create First Project'),
+                  label: Text(L10n.t.createFirstProject),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const AddEditProjectScreen()),
@@ -182,7 +183,7 @@ class _ProjectCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${project.taskCount} ${project.taskCount == 1 ? 'task' : 'tasks'} remaining',
+              '${project.taskCount} ${project.taskCount == 1 ? 'task' : 'tasksL10n.t.remaining,
               style: TextStyle(fontSize: 11, color: AppColors.textMuted),
             ),
           ],
@@ -205,7 +206,7 @@ class _ProjectCard extends StatelessWidget {
           children: [
             ListTile(
               leading: Icon(Icons.edit_outlined, color: project.color),
-              title: Text('Edit Project', style: TextStyle(color: AppColors.textPrimary)),
+              title: Text(L10n.t.editProject, style: TextStyle(color: AppColors.textPrimary)),
               onTap: () {
                 Navigator.pop(ctx);
                 Navigator.push(
@@ -216,8 +217,8 @@ class _ProjectCard extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.delete_outline, color: AppColors.error),
-              title: Text('Delete Project', style: TextStyle(color: AppColors.error)),
-              subtitle: Text('Tasks will be unlinked, not deleted', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+              title: Text(L10n.t.deleteProject, style: TextStyle(color: AppColors.error)),
+              subtitle: Text(L10n.t.tasksWillBeUnlinkedNotDeleted, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
               onTap: () {
                 Navigator.pop(ctx);
                 _confirmDelete(context);
@@ -235,7 +236,7 @@ class _ProjectCard extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Delete Project?', style: TextStyle(color: AppColors.textPrimary)),
+        title: Text(L10n.t.deleteProject2, style: TextStyle(color: AppColors.textPrimary)),
         content: Text(
           'Delete "${project.name}"? Tasks in this project will remain but won\'t be in any project.',
           style: TextStyle(color: AppColors.textSecondary),
@@ -243,7 +244,7 @@ class _ProjectCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+            child: Text(L10n.t.cancel, style: TextStyle(color: AppColors.textMuted)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -251,7 +252,7 @@ class _ProjectCard extends StatelessWidget {
               Navigator.pop(ctx);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Delete'),
+            child: Text(L10n.t.delete),
           ),
         ],
       ),
