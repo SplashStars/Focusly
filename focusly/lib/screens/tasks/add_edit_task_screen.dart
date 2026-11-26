@@ -11,6 +11,7 @@ import '../../providers/task_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../models/project_model.dart';
 import '../../theme/app_theme.dart';
+import '../../services/locale_controller.dart';
 
 class AddEditTaskScreen extends StatefulWidget {
   final TaskModel? task; // null = add mode, non-null = edit mode
@@ -71,7 +72,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        title: Text(_isEditing ? 'Edit Task' : 'New Task'),
+        title: Text(_isEditing ? L10n.t.editTask : L10n.t.newTask),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
@@ -85,7 +86,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           else
             TextButton(
               onPressed: _save,
-              child: Text('Save', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
+              child: Text(L10n.t.save, style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700, fontSize: 16)),
             ),
         ],
       ),
@@ -97,28 +98,28 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Title
-              _buildSectionLabel('Task Title *'),
+              _buildSectionLabel(L10n.t.taskTitle),
               TextFormField(
                 controller: _titleController,
                 autofocus: !_isEditing,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
                 decoration: InputDecoration(
-                  hintText: 'What needs to be done?',
+                  hintText: L10n.t.whatNeedsToBeDone,
                   prefixIcon: Icon(Icons.edit_outlined, color: AppColors.textMuted),
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a task title' : null,
+                validator: (v) => (v == null || v.trim().isEmpty) ? L10n.t.pleaseEnterATaskTitle : null,
                 maxLines: 2,
                 minLines: 1,
               ),
               const SizedBox(height: 16),
 
               // Description
-              _buildSectionLabel('Description (optional)'),
+              _buildSectionLabel(L10n.t.descriptionOptional),
               TextFormField(
                 controller: _descController,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Add more details...',
+                  hintText: L10n.t.addMoreDetails,
                   prefixIcon: Icon(Icons.notes_outlined, color: AppColors.textMuted),
                 ),
                 maxLines: 3,
@@ -127,7 +128,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               const SizedBox(height: 20),
 
               // Priority
-              _buildSectionLabel('Priority'),
+              _buildSectionLabel(L10n.t.priority),
               Row(
                 children: Priority.values.map((p) => _PriorityButton(
                   priority: p,
@@ -138,27 +139,27 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               const SizedBox(height: 20),
 
               // Due Date
-              _buildSectionLabel('Due Date'),
+              _buildSectionLabel(L10n.t.dueDate),
               _buildDatePicker(),
               const SizedBox(height: 16),
 
               // Reminder (FREE — unlike Todoist!)
-              _buildSectionLabel('Reminder 🔔 (FREE)'),
+              _buildSectionLabel(L10n.t.reminderFree),
               _buildReminderPicker(),
               const SizedBox(height: 16),
 
               // Recurrence
-              _buildSectionLabel('Repeat'),
+              _buildSectionLabel(L10n.t.repeat),
               _buildRecurrencePicker(),
               const SizedBox(height: 16),
 
               // Project
-              _buildSectionLabel('Project'),
+              _buildSectionLabel(L10n.t.project),
               _buildProjectPicker(context),
               const SizedBox(height: 20),
 
               // Subtasks
-              _buildSectionLabel('Subtasks'),
+              _buildSectionLabel(L10n.t.subtasks),
               _buildSubtasks(),
               const SizedBox(height: 100),
             ],
@@ -224,7 +225,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               child: Text(
                 _dueDate != null
                     ? DateFormat('EEE, MMM d, yyyy').format(_dueDate!)
-                    : 'No due date',
+                    : L10n.t.noDueDate,
                 style: TextStyle(
                   color: _dueDate != null ? AppColors.textPrimary : AppColors.textMuted,
                   fontSize: 14,
@@ -298,7 +299,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               child: Text(
                 _reminderTime != null
                     ? DateFormat('EEE, MMM d · h:mm a').format(_reminderTime!)
-                    : 'Set reminder (tap to choose date & time)',
+                    : L10n.t.setReminderTapToChooseDate,
                 style: TextStyle(
                   color: _reminderTime != null ? AppColors.textPrimary : AppColors.textMuted,
                   fontSize: 14,
@@ -366,13 +367,13 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                 children: [
                   Icon(Icons.folder_outlined, size: 18, color: AppColors.textMuted),
                   SizedBox(width: 10),
-                  Text('No project', style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
+                  Text(L10n.t.noProject, style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
                 ],
               ),
               items: [
                 DropdownMenuItem<String?>(
                   value: null,
-                  child: Text('No project', style: TextStyle(color: AppColors.textSecondary)),
+                  child: Text(L10n.t.noProject, style: TextStyle(color: AppColors.textSecondary)),
                 ),
                 ...provider.projects.map((p) => DropdownMenuItem<String?>(
                   value: p.id,
@@ -428,7 +429,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         TextButton.icon(
           onPressed: () => setState(() => _subtaskControllers.add(TextEditingController())),
           icon: Icon(Icons.add, size: 16, color: AppColors.textSecondary),
-          label: Text('Add subtask', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          label: Text(L10n.t.addSubtask, style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
         ),
       ],
     );
