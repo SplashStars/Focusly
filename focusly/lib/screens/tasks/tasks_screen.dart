@@ -9,6 +9,7 @@ import '../../providers/task_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../widgets/task_card.dart';
 import 'add_edit_task_screen.dart';
+import '../../services/locale_controller.dart';
 
 class TasksScreen extends StatelessWidget {
   const TasksScreen({super.key});
@@ -49,11 +50,11 @@ class TasksScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'My Tasks',
+                  L10n.t.myTasks,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                 ),
                 Text(
-                  'Swipe right to complete · Swipe left to delete',
+                  L10n.t.swipeRightToCompleteSwipeLeft,
                   style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
                 ),
               ],
@@ -88,7 +89,7 @@ class TasksScreen extends StatelessWidget {
             children: [
               // "All" chip
               _FilterChip(
-                label: 'All',
+                label: L10n.t.all,
                 isSelected: tasks.filterProjectId == null,
                 onTap: () => tasks.setProjectFilter(null),
                 color: AppColors.primary,
@@ -120,17 +121,17 @@ class TasksScreen extends StatelessWidget {
               children: [
                 Icon(Icons.task_alt, size: 60, color: AppColors.textMuted),
                 const SizedBox(height: 16),
-                Text('No tasks yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                Text(L10n.t.noTasksYet, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
                 Text(
-                  'Tap the + button to add your first task.\nAll tasks are free — no subscription needed!',
+                  L10n.t.tapTheButtonToAddYour,
                   style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Your First Task'),
+                  label: Text(L10n.t.addYourFirstTask),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const AddEditTaskScreen()),
