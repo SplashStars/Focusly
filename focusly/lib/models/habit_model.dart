@@ -110,7 +110,7 @@ class HabitModel {
   /// Human-readable schedule label
   String get scheduleLabel {
     if (targetDays.isEmpty) return L10n.t.everyDay;
-    dayNames = [L10n.t.mon, L10n.t.tue, L10n.t.wed, L10n.t.thu, L10n.t.fri, L10n.t.sat, L10n.t.sun];
+    final dayNames = [L10n.t.mon, L10n.t.tue, L10n.t.wed, L10n.t.thu, L10n.t.fri, L10n.t.sat, L10n.t.sun];
     final sorted = List<int>.from(targetDays)..sort();
     return sorted.map((d) => dayNames[d - 1]).join(' · ');
   }
