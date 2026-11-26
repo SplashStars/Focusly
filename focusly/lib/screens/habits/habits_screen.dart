@@ -8,6 +8,7 @@ import '../../theme/app_theme.dart';
 import '../../providers/habit_provider.dart';
 import '../../widgets/habit_card.dart';
 import 'add_edit_habit_screen.dart';
+import '../../services/locale_controller.dart';
 
 class HabitsScreen extends StatelessWidget {
   const HabitsScreen({super.key});
@@ -49,7 +50,7 @@ class HabitsScreen extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Daily Habits 🔥', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+              Text(L10n.t.dailyHabits, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
               const SizedBox(height: 4),
               Text('$done of $total completed today', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
               const SizedBox(height: 14),
@@ -84,17 +85,17 @@ class HabitsScreen extends StatelessWidget {
               children: [
                 const Text('🔥', style: TextStyle(fontSize: 60)),
                 const SizedBox(height: 16),
-                Text('No habits yet!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                Text(L10n.t.noHabitsYet, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
                 Text(
-                  'Build daily habits and watch your streaks grow.\nAll habit tracking is completely FREE.',
+                  L10n.t.buildDailyHabitsAndWatchYour,
                   style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Your First Habit'),
+                  label: Text(L10n.t.addYourFirstHabit),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const AddEditHabitScreen()),
